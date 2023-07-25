@@ -15,6 +15,8 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('magnolia_airport')
 
+FLIGHTS_WS = SHEET.worksheet("flights")
+
 
 def readable_passenger_details(passenger):
     """
@@ -58,30 +60,38 @@ def book_ticket():
     Will ask for user input to determine which flight they want to book
     and get passenger details.
     """
+
     # Ask for intended destination and check that there is a flight there
     while True:
+        # Get user input for flight destination
         destination = input("What is the destination? ").capitalize()
-        destinations_list = SHEET.worksheet("flights").col_values(2)[1:]
 
-        readable_destinations_list = ", ".join(destinations_list)
+        # From spreadsheet, pull all flight destinations
+        destinations_column = get_flights_ws_column_no("destination")
+        destinations_list = FLIGHTS_WS.col_values(destinations_column)[1:]
+        destinations_set = set(destinations_list)
+
+        readable_destinations = ", ".join(destinations_set)
 
         # If the desired destination not available, inform user of this and loop starts again
         # If the destination is available, loop breaks and function continues
-        if destination not in destinations_list:
+        if destination not in destinations_set:
             print(f"""
 No flights to {destination}.
 Available destinations:
 
-   {readable_destinations_list}
+---
+{readable_destinations}
+---
 
 Please try again.
 """)
         else:
             break
 
-    flights_worksheet = SHEET.worksheet("flights")
-    flight_worksheet_row = flights_worksheet.find(destination).row
-    flight_time = flights_worksheet.cell(flight_worksheet_row, 5).value
+    flight_row = FLIGHTS_WS.find(destination).row
+    flight_times_column = get_flights_ws_column_no("departure time")
+    flight_time = FLIGHTS_WS.cell(flight_row, flight_times_column).value
 
     # Ask user if the flight at a certain time should be booked
     # If yes, continue booking
@@ -113,7 +123,7 @@ Please try again.
     passenger_details = get_passenger_details()
 
     # Pull flight number from "flights" worksheet
-    flight_number = flights_worksheet.cell(flight_worksheet_row, 1).value
+    flight_number = FLIGHTS_WS.cell(flight_row, 1).value
 
     # Get list of used booking numbers to ensure there is no repetition
     booking_nos_worksheet = SHEET.worksheet("booking nos")
@@ -218,3 +228,7 @@ def validate_passenger_detail(detail_type, data):
     validated_info["data"] = formatted_info
 
     return validated_info
+
+
+def get_flights_ws_column_no(heading):
+    return FLIGHTS_WS.find(heading).col
