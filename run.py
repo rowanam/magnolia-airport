@@ -1,6 +1,9 @@
 import gspread
 from google.oauth2.service_account import Credentials
 
+import random
+import string
+
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -78,7 +81,7 @@ Please try again.
 
     flights_worksheet = SHEET.worksheet("flights")
     flight_worksheet_row = flights_worksheet.find(destination).row
-    flight_time = flights_worksheet.cell(flight_worksheet_row, 3).value
+    flight_time = flights_worksheet.cell(flight_worksheet_row, 5).value
 
     # Ask user if the flight at a certain time should be booked
     # If yes, continue booking
@@ -111,6 +114,34 @@ Please try again.
 
     # Pull flight number from "flights" worksheet
     flight_number = flights_worksheet.cell(flight_worksheet_row, 1).value
+
+    # Get list of used booking numbers to ensure there is no repetition
+    booking_nos_worksheet = SHEET.worksheet("booking nos")
+    used_booking_nos = booking_nos_worksheet.col_values(1)
+
+    while True:
+        # Generate a sequence of 2 letters, 2 numbers, 2 letters, 2 numbers for a booking reference
+        # Example booking no: TF78RE32
+        characters_list = []
+        for i in range(2):
+            characters_list.extend(random.choices(string.ascii_uppercase, k=2))
+            characters_list.extend([random.randint(1, 9) for i in range(2)])
+
+        # Join booking number characters into a single string
+        booking_no = ""
+        for character in characters_list:
+            booking_no += (str(character))
+
+        # Check that booking number has not already been used
+        # If it has, generate a new one
+        if booking_no not in used_booking_nos:
+            break
+    
+    # Add generated booking number for this passenger to worksheet of used numbers
+    booking_nos_worksheet.append_row([booking_no])
+
+    # Add booking number to passenger details
+    passenger_details.append(booking_no)
 
     print(f"\nAdding passenger to flight...")
 
