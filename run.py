@@ -75,3 +75,69 @@ Please try again.
 """)
         else:
             break
+    
+    passenger_details = get_passenger_details()
+
+
+def get_passenger_details():
+    """
+    Gets passenger details and returns them in a list
+    """
+    passenger_details = []
+    details = ["first name", "last name", "date of birth", "passport no", "nationality"]
+
+    # Get input for each required detail
+    # Run detail through validator function and repeat request until correct data entered,
+    # then append to passenger_details list
+    for detail in details:
+        while True:
+            info = input(f"\nPlease enter {detail}: ")
+            validated_info = validate_passenger_detail(detail, info)
+
+            if validated_info["validity"]:
+                break
+        
+        passenger_details.append(validated_info["data"])
+        
+    return passenger_details
+
+
+def validate_passenger_detail(detail_type, data):
+    """
+    Formats input data and then checks that it is of the expected type
+    """
+    print("Validating...")
+
+    # Create a dictionary with values to return to where function was called
+    # Validity of data and formatted data are returned at the same time
+    validated_info = {"validity": True, "data": None}
+
+    def data_not_valid():
+        """
+        Changes validity in validated_info dictionary to False
+        """
+        validated_info["validity"] = False
+
+    # For each detail type, first format data in the correct way for that type
+    # Then check the input matches the expected data type
+    if detail_type == "first name" or detail_type == "last name":
+        formatted_info = data.capitalize()
+
+        try:
+            if formatted_info.isalpha():
+                print("Data is valid.")
+            else:
+                data_not_valid()
+                raise ValueError
+        except ValueError:
+            print("Invalid data, please try again.")
+
+    # Will add validation steps for other detail types
+    # For now, give the original input as return value so function can continue running
+    else:
+        print("Validation not yet available. Returning original value.")
+        formatted_info = data
+
+    validated_info["data"] = formatted_info
+
+    return validated_info
