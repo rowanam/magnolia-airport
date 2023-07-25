@@ -126,14 +126,18 @@ def get_passenger_details():
     Gets passenger details and returns them in a list
     """
     passenger_details = []
-    details = ["first name", "last name", "date of birth", "passport no", "nationality"]
+    details = ["first name", "last name", "date of birth", "passport no", "nationality", "luggage"]
 
     # Get input for each required detail
     # Run detail through validator function and repeat request until correct data entered,
     # then append to passenger_details list
     for detail in details:
         while True:
-            info = input(f"\nPlease enter {detail}: ")
+            if detail == "luggage":
+                info = input(f"\nAdd baggage to booking (yes/no): ")
+            else:
+                info = input(f"\nPlease enter {detail}: ")
+            
             validated_info = validate_passenger_detail(detail, info)
 
             if validated_info["validity"]:
