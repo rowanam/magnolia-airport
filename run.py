@@ -106,7 +106,19 @@ Please try again.
         else:
             print(f"Please type 'yes' or 'no' only\n")
         
+    # Ask user questions to get passenger details
     passenger_details = get_passenger_details()
+
+    # Pull flight number from "flights" worksheet
+    flight_number = flights_worksheet.cell(flight_worksheet_row, 1).value
+
+    print(f"\nAdding passenger to flight...")
+
+    # Add the passenger details to a new row in the flight's worksheet
+    flight_worksheet = SHEET.worksheet(flight_number)
+    flight_worksheet.append_row(passenger_details)
+
+    print(f"\nPassenger {passenger_details[0]} {passenger_details[1]} successfully added to flight {flight_number}")
 
 
 def get_passenger_details():
