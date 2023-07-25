@@ -75,7 +75,37 @@ Please try again.
 """)
         else:
             break
-    
+
+    flights_worksheet = SHEET.worksheet("flights")
+    flight_worksheet_row = flights_worksheet.find(destination).row
+    flight_time = flights_worksheet.cell(flight_worksheet_row, 3).value
+
+    # Ask user if the flight at a certain time should be booked
+    # If yes, continue booking
+    # If no, function stops and code returns to main program
+    while True:
+        print(f"We have a flight to {destination} at {flight_time} today.")
+        continue_booking = input("Is that ok? (yes/no): ")
+
+        if continue_booking.lower() == "yes":
+            print(f"Continuing booking...")
+            break
+        elif continue_booking.lower() == "no":
+            while True:
+                new_request = input("Would you like to book a different flight? ")
+
+                if new_request.lower() == "yes":
+                    print()
+                    book_ticket()
+                elif new_request.lower() == "no":
+                    print("Goodbye, have a nice day")
+                    print(f"Exiting ticket booking...\n")
+                    return
+                else:
+                    print(f"Please type 'yes' or 'no' only\n")
+        else:
+            print(f"Please type 'yes' or 'no' only\n")
+        
     passenger_details = get_passenger_details()
 
 
