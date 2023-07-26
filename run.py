@@ -282,7 +282,6 @@ def validate_passenger_detail(detail_type, data):
     """
     Formats input data and then checks that it is of the expected type
     """
-    print("Validating...")
 
     # Create a dictionary with values to return to where function was called
     # Validity of data and formatted data are returned at the same time
@@ -293,10 +292,7 @@ def validate_passenger_detail(detail_type, data):
         if detail_type == "first name" or detail_type == "last name":
             formatted_info = data.capitalize()
 
-            if formatted_info.isalpha():
-                validated_info["data"] = formatted_info
-                print("Data is valid")
-            else:
+            if not formatted_info.isalpha():
                 raise ValueError("name must consist of letters only")
 
         elif detail_type == "date of birth":
@@ -309,33 +305,23 @@ def validate_passenger_detail(detail_type, data):
                 raise ValueError("date of birth must be in the past")
 
             formatted_info = data
-            print("Data is valid")
         
         elif detail_type == "passport no":
             formatted_info = data.upper()
 
-            if formatted_info.isalnum():
-                validated_info["data"] = formatted_info
-                print("Data is valid")
-            else:
+            if not formatted_info.isalnum():
                 raise ValueError("passport number must be letters and numbers only")
 
         elif detail_type == "nationality":
             formatted_info = data.upper()
 
-            if formatted_info in COUNTRIES:
-                validated_info["data"] = formatted_info
-                print("Data is valid")
-            else:
+            if formatted_info not in COUNTRIES:
                 raise ValueError("must be a country name")
         
         elif detail_type == "luggage":
             formatted_info = int(data)
 
-            if 0 <= formatted_info <= 2:
-                validated_info["data"] = formatted_info
-                print("Data is valid")
-            else:
+            if not (0 <= formatted_info <= 2):
                 raise ValueError("number of luggage items must be between 0 and 2")
         
         else:
@@ -346,6 +332,7 @@ def validate_passenger_detail(detail_type, data):
         print(f"Invalid data: {e}. Please try again.")
     
     else:
+        # If not errors, set validity to True and add formatted data to return value
         validated_info["validity"] = True
         validated_info["data"] = formatted_info
 
