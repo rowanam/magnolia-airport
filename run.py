@@ -6,6 +6,8 @@ import string
 
 from datetime import datetime
 
+from pycountry import countries
+
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -17,7 +19,14 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('magnolia_airport')
 
+
+# Flights worksheet in project spreadsheet
 FLIGHTS_WS = SHEET.worksheet("flights")
+
+# List of countries, taken from pycountry countries object
+# Note that this list is not perfect - includes some subdivisions of countries,
+# e.g. individual islands
+COUNTRIES = [country.name.upper() for country in countries]
 
 
 def get_flights_ws_column_no(heading):
@@ -222,8 +231,13 @@ def get_passenger_details():
         while True:
             if detail == "date of birth":
                 info = input(f"\nPlease enter {detail} (YYYY-MM-DD): ")
+            elif detail == "nationality":
+                print(f"\nNationality:")
+                print("   If input country name doesn't work, please try writing it")
+                print("   a different way (e.g. for UK type United Kingdom).")
+                info = input(f"\nPlease enter {detail}: ")
             elif detail == "luggage":
-                info = input(f"\nAdd baggage to booking (yes/no): ")
+                info = input(f"\nHow many items of checked luggage would you like to book? (max. 2) ")
             else:
                 info = input(f"\nPlease enter {detail}: ")
             
@@ -272,6 +286,24 @@ def validate_passenger_detail(detail_type, data):
                 print("Data is valid")
             else:
                 raise ValueError("passport number must be letters and numbers only")
+
+        elif detail_type == "nationality":
+            formatted_info = data.upper()
+
+            if formatted_info in COUNTRIES:
+                validated_info["data"] = formatted_info
+                print("Data is valid")
+            else:
+                raise ValueError("must be a country name")
+        
+        elif detail_type == "luggage":
+            formatted_info = int(data)
+
+            if 0 <= formatted_info <= 2:
+                validated_info["data"] = formatted_info
+                print("Data is valid")
+            else:
+                raise ValueError("number of luggage items must be between 0 and 2")
         
         else:
             print("Validation not yet available. Returning original value.")
