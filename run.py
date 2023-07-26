@@ -206,45 +206,41 @@ def validate_passenger_detail(detail_type, data):
 
     # Create a dictionary with values to return to where function was called
     # Validity of data and formatted data are returned at the same time
-    validated_info = {"validity": True, "data": None}
-
-    def data_not_valid():
-        """
-        Changes validity in validated_info dictionary to False
-        """
-        validated_info["validity"] = False
-
+    validated_info = {"validity": False, "data": None}
+    
     # For each detail type, check that the input matches the expected data type
-    if detail_type == "first name" or detail_type == "last name":
-        formatted_info = data.capitalize()
+    try:
+        if detail_type == "first name" or detail_type == "last name":
+            formatted_info = data.capitalize()
 
-        try:
             if formatted_info.isalpha():
                 validated_info["data"] = formatted_info
-                print("Data is valid.")
+                print("Data is valid")
             else:
-                data_not_valid()
                 raise ValueError
-        except ValueError:
-            print("Invalid data, please try again.")
-    elif detail_type == "date of birth":
 
-        try:
-            formatted_info = datetime.strptime(data, '%Y-%m-%d').date()
-            print(formatted_info)
-            print("Data is valid.")
-        except ValueError:
-            data_not_valid()
-            print("Invalid data, please try again.")
+        elif detail_type == "date of birth":
+            # Check that the input can be parsed to a datetime object
+            datetime.strptime(data, '%Y-%m-%d').date()
+            formatted_info = data
+            print("Data is valid")
+        
+        else:
+            print("Validation not yet available. Returning original value.")
+            formatted_info = data
 
-    # Will add validation steps for other detail types
-    # For now, give the original input as return value so function can continue running
+    except ValueError:
+        print("Invalid data, please try again.")
+    
     else:
-        print("Validation not yet available. Returning original value.")
-        formatted_info = data
+        validated_info["validity"] = True
+        validated_info["data"] = formatted_info
 
     return validated_info
 
 
 def get_flights_ws_column_no(heading):
     return FLIGHTS_WS.find(heading).col
+
+
+book_ticket()
