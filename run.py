@@ -151,7 +151,6 @@ Please try again.
         continue_booking = input("Is that ok? (yes/no): ")
 
         if continue_booking.lower() == "yes":
-            print(f"Continuing booking...")
             break
         elif continue_booking.lower() == "no":
             while True:
@@ -175,6 +174,7 @@ Please try again.
             print(f"Please type 'yes' or 'no' only\n")
         
     # Ask user questions to get passenger details
+    print(f"\nPassenger Details")
     passenger_details = get_passenger_details()
 
     # Pull flight number from "flights" worksheet
@@ -274,7 +274,13 @@ def validate_passenger_detail(detail_type, data):
 
         elif detail_type == "date of birth":
             # Check that the input can be parsed to a datetime object
-            datetime.strptime(data, '%Y-%m-%d').date()
+            input_date = datetime.strptime(data, '%Y-%m-%d').date()
+
+            # Check that birth date is in the past
+            today = datetime.now().date()
+            if today <= input_date:
+                raise ValueError("date of birth must be in the past")
+
             formatted_info = data
             print("Data is valid")
         
