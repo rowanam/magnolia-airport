@@ -55,16 +55,25 @@ def readable_passenger_details(passenger):
     return readable_details
 
 
+def create_heading(title):
+    """
+    Print a heading to the terminal to visually signify starting a function
+    """
+    heading = f"""
+----------------------------------------
+{title}
+----------------------------------------
+    """
+
+    return heading
+
+
 def view_all_passenger_details():
     """
     Asks the user for a flight number, then prints a readable output of all
     passengers on that flight and their details
     """
-    print("""
-----------------------------------------
-View Passenger Details
-----------------------------------------
-    """)
+    print(create_heading("View Passenger Details"))
     flight_nos_column = get_flights_ws_column_no("flight no")
     flight_nos = FLIGHTS_WS.col_values(flight_nos_column)
 
@@ -105,11 +114,7 @@ def book_ticket():
     Will ask for user input to determine which flight they want to book
     and get passenger details.
     """
-    print("""
-----------------------------------------
-Ticket Booking
-----------------------------------------
-    """)
+    print(create_heading("Ticket Booking"))
 
     # Ask for intended destination and check that there is a flight there
     while True:
@@ -339,6 +344,82 @@ def validate_passenger_detail(detail_type, data):
     return validated_info
 
 
+def find_passenger():
+    """
+    Ask user for flight and booking nos and return this info along with ws row
+    """
+    details = {
+        "flight_no": None,
+        "booking_no": None,
+        "row": None
+    }
+
+    flight_no = input("Please enter your flight number: ")
+    booking_no = input("Please enter your booking number: ")
+
+    ws = SHEET.worksheet(flight_no)
+    row = ws.find(booking_no).row
+
+    details["flight_no"] = flight_no
+    details["booking_no"] = booking_no
+    details["row"] = row
+
+    return details
+
+
+def check_in():
+    """
+    Check a passenger in
+    """
+    print(create_heading("Check In"))
+
+    # Get passenger details, store ws and booking info in variables
+    passenger_details = find_passenger()
+    ws = SHEET.worksheet(passenger_details["flight_no"])
+    row = passenger_details["row"]
+    booking_no = passenger_details["booking_no"]
+
+    # Get passenger name and store as a string
+    first_name_column = ws.find("first name").col
+    last_name_column = ws.find("last name").col
+    first_name = ws.cell(row, first_name_column).value
+    last_name = ws.cell(row, last_name_column).value
+    name = f"{first_name} {last_name}"
+
+    print(f"\nFor booking no. {booking_no} found passenger name: {name}")
+
+    # Check that correct passenger has been retrieved
+    while True:
+        correct_passenger = input(f"\nIs this correct? (yes/no) ").lower()
+
+        if correct_passenger == "yes":
+            break
+        elif correct_passenger == "no":
+            print("Returning to home...")
+            return
+        else:
+            print("Please print 'yes' or 'no' only")
+
+    checked_in_column = ws.find("checked in").col
+    checked_in_cell = ws.cell(row, checked_in_column)
+
+    # See if passenger is already checked in by getting the boolean value of their "checked in" cell
+    # If the cell is empty, will return False
+    # If the cell contains the string "TRUE", will return True
+    checked_in = bool(checked_in_cell.value)
+
+    if checked_in:
+        print(f"\n{name} is already checked in.")
+        return
+
+    print(f"\nChecking in...")
+    
+    # Update checked in cell value to True
+    ws.update_cell(row, checked_in_column, True)
+
+    print(f"\n{name} successfully checked in")
+
+
 def main():
     """
     Main program. Allow user to choose which function(s) to run.
@@ -349,7 +430,8 @@ def main():
     control_options = {
         1: "view all passengers for a flight", 
         2: "book a ticket",
-        3: "exit system"}
+        3: "check in page",
+        4: "exit system"}
 
     for num, option in control_options.items():
         print(f"   {num}) {option.capitalize()}")
@@ -371,12 +453,15 @@ def main():
                 book_ticket()
                 break
             elif control_choice == 3:
+                check_in()
+                break
+            elif control_choice == 4:
                 print(f"\nGoodbye, have a nice day.")
                 exit()
             else:
                 print(f"No option ({control_choice}), please choose an option from the list above")
     
-    input(f"Hit enter to return to the main program\n")
+    input(f"\nHit enter to return to the main program\n")
     main()
 
 
