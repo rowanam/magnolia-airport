@@ -256,7 +256,7 @@ def validate_passenger_detail(detail_type, data):
                 validated_info["data"] = formatted_info
                 print("Data is valid")
             else:
-                raise ValueError
+                raise ValueError("name must consist of letters only")
 
         elif detail_type == "date of birth":
             # Check that the input can be parsed to a datetime object
@@ -264,12 +264,21 @@ def validate_passenger_detail(detail_type, data):
             formatted_info = data
             print("Data is valid")
         
+        elif detail_type == "passport no":
+            formatted_info = data.upper()
+
+            if formatted_info.isalnum():
+                validated_info["data"] = formatted_info
+                print("Data is valid")
+            else:
+                raise ValueError("passport number must be letters and numbers only")
+        
         else:
             print("Validation not yet available. Returning original value.")
             formatted_info = data
 
-    except ValueError:
-        print("Invalid data, please try again.")
+    except ValueError as e:
+        print(f"Invalid data: {e}. Please try again.")
     
     else:
         validated_info["validity"] = True
