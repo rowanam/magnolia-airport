@@ -110,6 +110,11 @@ Please try again.
                 if new_request.lower() == "yes":
                     print()
                     book_ticket()
+                    # After re-calling function above, first time function call is still running,
+                    # and will come back to this loop when the second function call stops.
+                    # This return means that when the main function call comes back here,
+                    # it will end
+                    return
                 elif new_request.lower() == "no":
                     print("Goodbye, have a nice day")
                     print(f"Exiting ticket booking...\n")
