@@ -4,6 +4,8 @@ from google.oauth2.service_account import Credentials
 import random
 import string
 
+from datetime import datetime
+
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -179,7 +181,9 @@ def get_passenger_details():
     # then append to passenger_details list
     for detail in details:
         while True:
-            if detail == "luggage":
+            if detail == "date of birth":
+                info = input(f"\nPlease enter {detail} (YYYY-MM-DD): ")
+            elif detail == "luggage":
                 info = input(f"\nAdd baggage to booking (yes/no): ")
             else:
                 info = input(f"\nPlease enter {detail}: ")
@@ -210,18 +214,27 @@ def validate_passenger_detail(detail_type, data):
         """
         validated_info["validity"] = False
 
-    # For each detail type, first format data in the correct way for that type
-    # Then check the input matches the expected data type
+    # For each detail type, check that the input matches the expected data type
     if detail_type == "first name" or detail_type == "last name":
         formatted_info = data.capitalize()
 
         try:
             if formatted_info.isalpha():
+                validated_info["data"] = formatted_info
                 print("Data is valid.")
             else:
                 data_not_valid()
                 raise ValueError
         except ValueError:
+            print("Invalid data, please try again.")
+    elif detail_type == "date of birth":
+
+        try:
+            formatted_info = datetime.strptime(data, '%Y-%m-%d').date()
+            print(formatted_info)
+            print("Data is valid.")
+        except ValueError:
+            data_not_valid()
             print("Invalid data, please try again.")
 
     # Will add validation steps for other detail types
@@ -229,8 +242,6 @@ def validate_passenger_detail(detail_type, data):
     else:
         print("Validation not yet available. Returning original value.")
         formatted_info = data
-
-    validated_info["data"] = formatted_info
 
     return validated_info
 
