@@ -216,6 +216,33 @@ Please try again.
 
     print(f"\nPassenger {passenger_details[0]} {passenger_details[1]} successfully added to flight {flight_number}")
 
+    # Get and format flight date
+    flight_dates_column = get_flights_ws_column_no("date")
+    flight_date_str = FLIGHTS_WS.cell(flight_row, flight_dates_column).value
+    flight_date = datetime.strptime(flight_date_str, '%Y-%m-%d').date()
+    formatted_flight_date = flight_date.strftime("%b %-d, %Y")
+
+    # 's' suffix for 0 or 2 luggage pieces
+    suffix = "s"
+    if passenger_details[5] == 1:
+        suffix = ""
+
+    booking_confirmation_message = f"""
+
+----------------------------------------
+YOUR BOOKING
+
+Flight no. {flight_number} to {destination} on {formatted_flight_date} at {flight_time}
+
+Name: {passenger_details[0]} {passenger_details[1]}
+Booking no: {passenger_details[6]}
+Luggage: {passenger_details[5]} piece{suffix}
+----------------------------------------
+
+    """
+
+    print(booking_confirmation_message)
+
 
 def get_passenger_details():
     """
