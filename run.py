@@ -20,6 +20,14 @@ SHEET = GSPREAD_CLIENT.open('magnolia_airport')
 FLIGHTS_WS = SHEET.worksheet("flights")
 
 
+def get_flights_ws_column_no(heading):
+    """
+    Get the column number of the passed heading in the flights worksheet.
+    Column order can be changed or new columns added without breaking the program
+    """
+    return FLIGHTS_WS.find(heading).col
+
+
 def readable_passenger_details(passenger):
     """
     Create a string with the details for the passed passenger, printed in a human-readable format
@@ -38,7 +46,33 @@ def readable_passenger_details(passenger):
     return readable_details
 
 
-def view_all_passenger_details(flight_number):
+def view_all_passenger_details():
+    """
+    Asks the user for a flight number, then prints a readable output of all
+    passengers on that flight and their details
+    """
+    print("""
+----------------------------------------
+View Passenger Details
+----------------------------------------
+    """)
+    flight_nos_column = get_flights_ws_column_no("flight no")
+    flight_nos = FLIGHTS_WS.col_values(flight_nos_column)
+
+    while True:
+        flight = input("Please input a flight number: ")
+
+        try:
+            if flight in flight_nos:
+                print(f"\n", get_all_passenger_details(flight))
+                break
+            else:
+                raise ValueError("Invalid flight number")
+        except ValueError as e:
+            print(f"{e}, please try again\n")
+
+
+def get_all_passenger_details(flight_number):
     """
     View all passengers and their details on the flight with the provided number
     """
@@ -62,6 +96,11 @@ def book_ticket():
     Will ask for user input to determine which flight they want to book
     and get passenger details.
     """
+    print("""
+----------------------------------------
+Ticket Booking
+----------------------------------------
+    """)
 
     # Ask for intended destination and check that there is a flight there
     while True:
@@ -99,7 +138,7 @@ Please try again.
     # If yes, continue booking
     # If no, function stops and code returns to main program
     while True:
-        print(f"We have a flight to {destination} at {flight_time} today.")
+        print(f"\nWe have a flight to {destination} at {flight_time} today.")
         continue_booking = input("Is that ok? (yes/no): ")
 
         if continue_booking.lower() == "yes":
@@ -239,8 +278,45 @@ def validate_passenger_detail(detail_type, data):
     return validated_info
 
 
-def get_flights_ws_column_no(heading):
-    return FLIGHTS_WS.find(heading).col
+def main():
+    """
+    Main program. Allow user to choose which function(s) to run.
+    """
+    print(f"Welcome to Magnolia Airport's flight management portal.\n")
+    print(f"What would you like to do?\n")
+
+    control_options = {
+        1: "view all passengers for a flight", 
+        2: "book a ticket",
+        3: "exit system"}
+
+    for num, option in control_options.items():
+        print(f"   {num}) {option.capitalize()}")
+
+    while True:
+        control_choice = input(f"\nType an option number here: ")
+
+        try:
+            int(control_choice)
+        except ValueError:
+            print("Please input a number")
+        else:
+            control_choice = int(control_choice)
+
+            if control_choice == 1:
+                view_all_passenger_details()
+                break
+            elif control_choice == 2:
+                book_ticket()
+                break
+            elif control_choice == 3:
+                print(f"\nGoodbye, have a nice day.")
+                exit()
+            else:
+                print(f"No option ({control_choice}), please choose an option from the list above")
+    
+    input(f"Hit enter to return to the main program\n")
+    main()
 
 
-book_ticket()
+main()
