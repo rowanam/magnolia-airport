@@ -41,18 +41,24 @@ def readable_passenger_details(passenger):
     """
     Create a string with the details for the passed passenger, printed in a human-readable format
     """
-    readable_details = f"{passenger['first name']} {passenger['last name']}"
+    name = f"{passenger['first name(s)']} {passenger['last name']}"
+    readable_details = name
 
     # Add line for each detail except first and last name to string
     for key, value in passenger.items():
-        if key == "first name" or key == "last name":
+        if key == "first name(s)" or key == "last name" or key == "checked in":
             continue
         
         readable_details += (f"\n   {key.capitalize()}: {value}")
 
     readable_details += f"\n"
+
+    passenger_info = {
+        "name": name,
+        "readable_details": readable_details
+    }
     
-    return readable_details
+    return passenger_info
 
 
 def create_heading(title):
@@ -68,7 +74,7 @@ def create_heading(title):
     return heading
 
 
-def view_all_passenger_details():
+def view_all_passengers_of_flight():
     """
     Asks the user for a flight number, then prints a readable output of all
     passengers on that flight and their details
@@ -82,7 +88,7 @@ def view_all_passenger_details():
 
         try:
             if flight in flight_nos:
-                print(f"\n", get_all_passenger_details(flight))
+                print(f"\n", get_all_passengers_of_flight(flight))
                 break
             else:
                 raise ValueError("Invalid flight number")
@@ -90,7 +96,7 @@ def view_all_passenger_details():
             print(f"{e}, please try again\n")
 
 
-def get_all_passenger_details(flight_number):
+def get_all_passengers_of_flight(flight_number):
     """
     View all passengers and their details on the flight with the provided number
     """
@@ -102,7 +108,7 @@ def get_all_passenger_details(flight_number):
     passengers_display_string = ""
 
     for passenger in passengers:
-        details = readable_passenger_details(passenger)
+        details = readable_passenger_details(passenger)["readable_details"]
         passengers_display_string += f"{details}\n"
     
     return passengers_display_string
@@ -374,6 +380,8 @@ def find_booking():
     while True:
         booking_no = input("Please enter the booking number: ")
 
+        print(f"\nSearching for booking...")
+
         flight_no = None
         
         # Search for booking number. If found, assign the flight number to flight_no
@@ -416,6 +424,68 @@ def find_booking():
     details["row"] = row
 
     return details
+
+
+def view_passenger_details():
+    """
+    View a passenger's booking details
+    """
+    print(create_heading("View Passenger Details"))
+
+    # Get passenger details and continue based on return value
+    while True:
+        booking = find_booking()
+
+        # If no passenger found, run the loop again and call find_booking()
+        if booking == None:
+            pass
+        # If find_booking() returned "main", end current function and return to main function
+        elif booking == "main":
+            return
+        # Otherwise, continue with current function
+        else:
+            break
+
+    ws = SHEET.worksheet(booking["flight_no"])
+    row = booking["row"]
+
+    # Get passenger details as dict
+    # Subtract 2 from row number because:
+    # - When retrieving ws data as dict, row 1 is used as keys, i.e. one less item in returned list
+    # - Rows start at 1, need to subtract a further unit for list indices starting at 0
+    passenger = ws.get_all_records()[row - 2]
+
+    formatted_passenger_info = readable_passenger_details(passenger)
+    name = formatted_passenger_info["name"]
+
+    print(f"\nPassenger details:\n")
+    print(formatted_passenger_info["readable_details"])
+
+    checked_in = see_if_checked_in(ws, row)
+
+    if checked_in:
+        print(f"{name} is already checked in. Passenger details can no longer be changed.\n")
+    else:
+        print(f"Not yet checked in.\n")
+
+        while True:
+            update_details = input("Update passenger details? (yes/no) ").lower()
+
+            if update_details == "yes":
+                update_passenger_details(ws, row)
+                return
+            elif update_details == "no":
+                print("Exiting passenger details program...")
+                return
+            else:
+                print(f"Please type 'yes' or 'no' only.\n")
+
+
+def update_passenger_details(ws, row):
+    """
+    Change passenger details before check in or add luggage after check in
+    """
+    print(create_heading("Update Passenger Details"))
 
 
 def see_if_checked_in(ws, row):
@@ -505,10 +575,14 @@ def main():
         1: "view all passengers for a flight", 
         2: "book a ticket",
         3: "check in page",
-        4: "exit system"}
+        4: "view and update passenger details",
+        100: "exit system"}
 
     for num, option in control_options.items():
-        print(f"   {num}) {option.capitalize()}")
+        if num == 100:
+            print(f"\n   {num}) {option.capitalize()}")
+        else:
+            print(f"   {num}) {option.capitalize()}")
 
     while True:
         control_choice = input(f"\nType an option number here: ")
@@ -521,7 +595,7 @@ def main():
             control_choice = int(control_choice)
 
             if control_choice == 1:
-                view_all_passenger_details()
+                view_all_passengers_of_flight()
                 break
             elif control_choice == 2:
                 book_ticket()
@@ -530,6 +604,9 @@ def main():
                 check_in()
                 break
             elif control_choice == 4:
+                view_passenger_details()
+                break
+            elif control_choice == 100:
                 print(f"\nGoodbye, have a nice day.")
                 exit()
             else:
