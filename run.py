@@ -180,7 +180,7 @@ Please try again.
         
     # Ask user questions to get passenger details
     print(f"\nPassenger Details")
-    passenger_details = get_passenger_details()
+    passenger_details = get_all_passenger_details()
 
     # Pull flight number from "flights" worksheet
     flight_number = FLIGHTS_WS.cell(flight_row, 1).value
@@ -249,38 +249,49 @@ Luggage: {passenger_details[5]} piece{suffix}
     print(booking_confirmation_message)
 
 
-def get_passenger_details():
+def get_all_passenger_details():
     """
     Gets passenger details and returns them in a list
     """
     passenger_details = []
     details = ["first name", "last name", "date of birth", "passport no", "nationality", "luggage"]
 
-    # Get input for each required detail
-    # Run detail through validator function and repeat request until correct data entered,
-    # then append to passenger_details list
+    # Get input for each required detail then append to passenger_details list
     for detail in details:
-        while True:
-            if detail == "date of birth":
-                info = input(f"\nPlease enter {detail} (YYYY-MM-DD): ")
-            elif detail == "nationality":
-                print(f"\nNationality:")
-                print("   If input country name doesn't work, please try writing it")
-                print("   a different way (e.g. for UK type United Kingdom).")
-                info = input(f"\nPlease enter {detail}: ")
-            elif detail == "luggage":
-                info = input(f"\nHow many items of checked luggage would you like to book? (max. 2) ")
-            else:
-                info = input(f"\nPlease enter {detail}: ")
-            
-            validated_info = validate_passenger_detail(detail, info)
-
-            if validated_info["validity"]:
-                break
-        
-        passenger_details.append(validated_info["data"])
+        data = get_passenger_detail(detail)
+        passenger_details.append(data)
         
     return passenger_details
+
+
+def get_passenger_detail(detail_type):
+    """
+    Gets user input for a passenger detail and validates the data
+    """
+    while True:
+        # Print appropriate question for each detail type
+        if detail_type == "date of birth":
+            info = input(f"\nPlease enter {detail_type} (YYYY-MM-DD): ")
+        elif detail_type == "nationality":
+            print(f"\nNationality:")
+            print("   If input country name doesn't work, please try writing it")
+            print("   a different way (e.g. for UK type United Kingdom).")
+            info = input(f"\nPlease enter {detail_type}: ")
+        elif detail_type == "luggage":
+            info = input(f"\nHow many items of checked luggage would you like to book? (max. 2) ")
+        else:
+            info = input(f"\nPlease enter {detail_type}: ")
+        
+        # Check that input data is valid
+        validated_info = validate_passenger_detail(detail_type, info)
+
+        data_is_valid = validated_info["validity"]
+        if data_is_valid:
+            break
+
+    validated_data = validated_info["data"]
+
+    return validated_data
 
 
 def validate_passenger_detail(detail_type, data):
