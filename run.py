@@ -418,6 +418,20 @@ def find_booking():
     return details
 
 
+def see_if_checked_in(ws, row):
+    """
+    Checks if a passenger has already checked in
+    """
+    checked_in_column = ws.find("checked in").col
+    checked_in_cell = ws.cell(row, checked_in_column)
+
+    # See if passenger is checked in by getting the boolean value of their "checked in" cell
+    checked_in = bool(checked_in_cell.value)
+
+    if checked_in:
+        return True
+
+
 def check_in():
     """
     Check a passenger in
@@ -464,13 +478,8 @@ def check_in():
         else:
             print("Please print 'yes' or 'no' only")
 
-    checked_in_column = ws.find("checked in").col
-    checked_in_cell = ws.cell(row, checked_in_column)
-
-    # See if passenger is already checked in by getting the boolean value of their "checked in" cell
-    # If the cell is empty, will return False
-    # If the cell contains the string "TRUE", will return True
-    checked_in = bool(checked_in_cell.value)
+    # See if passenger is already checked in
+    checked_in = see_if_checked_in(ws, row)
 
     if checked_in:
         print(f"\n{name} is already checked in.")
@@ -479,6 +488,7 @@ def check_in():
     print(f"\nChecking in...")
     
     # Update checked in cell value to True
+    checked_in_column = ws.find("checked in").colchecked_in_column = ws.find("checked in").col
     ws.update_cell(row, checked_in_column, True)
 
     print(f"\n{name} successfully checked in")
