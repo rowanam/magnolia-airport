@@ -344,9 +344,9 @@ def validate_passenger_detail(detail_type, data):
     return validated_info
 
 
-def find_passenger():
+def find_booking():
     """
-    Ask user for flight and booking nos and return this info along with ws row
+    Ask user for last name and booking no and return flight no, booking no and passenger row number
     """
     details = {
         "flight_no": None,
@@ -354,11 +354,51 @@ def find_passenger():
         "row": None
     }
 
-    flight_no = input("Please enter your flight number: ")
-    booking_no = input("Please enter your booking number: ")
+    entered_last_name = input("Please enter last name: ")
+
+    # Get a list of all flight worksheets
+    all_flight_worksheets = SHEET.worksheets()[2:]
+
+    # Ask user for booking number and search for it in all flight worksheets
+    while True:
+        booking_no = input("Please enter the booking number: ")
+
+        flight_no = None
+        
+        # Search for booking number. If found, assign the flight number to flight_no
+        for flight_ws in all_flight_worksheets:
+            found = bool(flight_ws.find(booking_no))
+            
+            if found:
+                flight_no = flight_ws.title
+        
+        if flight_no:
+            break
+        else:
+            print(f"Booking number not found. Please try again.\n")
 
     ws = SHEET.worksheet(flight_no)
+
+    # Get the last name entered in the booking
+    last_name_column = ws.find("last name").col
     row = ws.find(booking_no).row
+    booking_last_name = ws.cell(row, last_name_column).value
+
+    # Check if last name input matches last name in booking
+    if entered_last_name != booking_last_name:
+        print(f"Last name does not match booking.\n")
+
+        # Return to where the function was called, passing either None or "main"
+        # Original function will either call again or return to main() function
+        while True:
+            choice = input("Press 1 to try again or 2 to return to main page: ")
+
+            if choice == "1":
+                return
+            elif choice == "2":
+                return "main"
+            else:
+                print(f"Please type 1 or 2 only.\n")
 
     details["flight_no"] = flight_no
     details["booking_no"] = booking_no
@@ -373,8 +413,21 @@ def check_in():
     """
     print(create_heading("Check In"))
 
-    # Get passenger details, store ws and booking info in variables
-    passenger_details = find_passenger()
+    # Get passenger details and continue based on return value
+    while True:
+        passenger_details = find_booking()
+
+        # If no passenger found, run the loop again and call find_booking()
+        if passenger_details == None:
+            pass
+        # If find_booking() returned "main", end check_in and return to main function
+        elif passenger_details == "main":
+            return
+        # Otherwise, continue with check in
+        else:
+            break
+
+    # Store ws and booking info in variables
     ws = SHEET.worksheet(passenger_details["flight_no"])
     row = passenger_details["row"]
     booking_no = passenger_details["booking_no"]
