@@ -428,7 +428,8 @@ def find_booking():
 
 def view_passenger_details():
     """
-    View a passenger's booking details
+    View a passenger's booking details and ask if anything needs to be changed
+    if not already checked in
     """
     print(create_heading("View Passenger Details"))
 
@@ -472,7 +473,7 @@ def view_passenger_details():
             update_details = input("Update passenger details? (yes/no) ").lower()
 
             if update_details == "yes":
-                update_passenger_details(ws, row)
+                get_new_passenger_detail(ws, row, name)
                 return
             elif update_details == "no":
                 print("Exiting passenger details program...")
@@ -481,11 +482,74 @@ def view_passenger_details():
                 print(f"Please type 'yes' or 'no' only.\n")
 
 
-def update_passenger_details(ws, row):
+def get_new_passenger_detail(ws, row, name):
     """
-    Change passenger details before check in or add luggage after check in
+    Change passenger details
     """
     print(create_heading("Update Passenger Details"))
+
+    # Get list of all column heading detail types that can be updated (excludes booking no and checked in cells)
+    detail_types = ws.row_values(1)[:6]
+
+    # Ask user to choose a detail type to be changed
+    while True:
+        detail_type_to_update = input("What detail needs to be changed? ").strip()
+
+        if detail_type_to_update in detail_types:
+            break
+        elif detail_type_to_update == "none":
+            print(f"\nExiting update details program...")
+            return
+        else:
+            print(f"\nDetail must be one of the following:")
+
+            for detail in detail_types:
+                print(f"   - {detail}")
+
+            print(f"\nTo return to the main program, type 'none'")
+
+            print(f"\nPlease try again.\n")
+
+    # Get and validate user input for updated passenger data
+    new_passenger_detail = get_passenger_detail(detail_type_to_update)
+
+    # Update detail in ws
+    detail_column = ws.find(detail_type_to_update).col
+    update_passenger_detail_in_ws(ws, row, detail_column, new_passenger_detail, name)
+
+    # See if user wants to change another detail
+    while True:
+        another_detail = input("Change another passenger detail? (yes/no) ")
+
+        if another_detail == "yes":
+            get_new_passenger_detail(ws, row, name)
+            return
+        elif another_detail == "no":
+            print("Exiting current program...")
+            return
+        else:
+            print("Please type 'yes' or 'no' only.")
+
+
+def update_passenger_detail_in_ws(ws, row, column, data, name):
+    """
+    Update a passenger's booking detail in flight ws
+    """
+    print(f"\nUpdating passenger data...")
+
+    # Get the original value to show user the change
+    original_value = ws.cell(row,column).value
+
+    # Update detail in ws
+    ws.update_cell(row, column, data)
+
+    # Get detail type from heading
+    detail_type = ws.cell(1, column).value
+
+    print(f"\n{detail_type.capitalize()} succesfully updated for {name}.")
+
+    print(f"\nOriginal input: {original_value}")
+    print(f"New value: {data}\n")
 
 
 def see_if_checked_in(ws, row):
