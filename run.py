@@ -8,6 +8,9 @@ from datetime import datetime
 
 from pycountry import countries
 
+from termcolor import colored, cprint
+
+
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
     "https://www.googleapis.com/auth/drive.file",
@@ -649,7 +652,18 @@ def main():
     """
     Main program. Allow user to choose which function(s) to run.
     """
-    print(f"Welcome to Magnolia Airport's flight management portal.\n")
+
+    # Open the start-up banner
+    with open("banner.txt") as f:
+        banner = f.read()
+
+    # Print colored start-up banner
+    colored_banner = colored(banner, "black", "on_light_cyan")
+    print(colored_banner)
+
+    input("(Press enter) ")
+
+    print(f"\n\nWelcome to Magnolia Airport's flight management portal.\n\n")
     print(f"What would you like to do?\n")
 
     control_options = {

@@ -8,3 +8,13 @@ The function works if the user says "no" to both questions the first time. But h
 
 26.7
 Fixed the bug by adding a return statement in an if statement in an inner loop in the function. Right above this return statement, the entire function that was currently runnng was called again, which was intended to reset the current program but I believe instead created a second instance of that function running, and when that ended the first function instance kept runnng. Seems to be resolved by adding the return statement to stop the "first" function running after the second ends, but there is probably a more elegant solution.
+
+## Attributions
+
+### Magnolia start-up banner
+
+Magnolia outline in start-up banner was created by taking an image from Freepik (link below) and uploading it to ASCIIart.club.
+
+Image by <a href="https://www.freepik.com/free-vector/hand-drawn-simple-flower-outline-illustration_24999034.htm#query=magnolia%20outline%20simple&position=0&from_view=search&track=ais">Freepik</a>
+
+<a href="https://asciiart.club/">ASCIIart.club</a>
