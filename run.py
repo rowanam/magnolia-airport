@@ -254,7 +254,7 @@ def get_all_passenger_details():
     Gets passenger details and returns them in a list
     """
     passenger_details = []
-    details = ["first name", "last name", "date of birth", "passport no", "nationality", "luggage"]
+    details = ["first name(s)", "last name", "date of birth", "passport no", "nationality", "luggage"]
 
     # Get input for each required detail then append to passenger_details list
     for detail in details:
@@ -305,11 +305,11 @@ def validate_passenger_detail(detail_type, data):
     
     # For each detail type, check that the input matches the expected data type
     try:
-        if detail_type == "first name" or detail_type == "last name":
-            formatted_info = data.capitalize()
+        if detail_type == "first name(s)" or detail_type == "last name":
+            formatted_info = data.title().strip()
 
-            if not formatted_info.isalpha():
-                raise ValueError("name must consist of letters only")
+            if not all(ch.isalpha() or ch.isspace() or ch == "-" for ch in formatted_info):
+                raise ValueError("name must consist of letters, spaces and '-' only")
 
         elif detail_type == "date of birth":
             # Check that the input can be parsed to a datetime object
