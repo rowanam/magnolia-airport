@@ -652,9 +652,9 @@ def check_in():
     PRINT_GREEN(f"\n{name} successfully checked in")
 
 
-def main():
+def start_program():
     """
-    Main program. Allow user to choose which function(s) to run.
+    Program start up. Print banner and call main() function.
     """
 
     # Open the start-up banner
@@ -667,6 +667,13 @@ def main():
 
     input("(Press enter) ")
 
+    main()
+
+
+def main():
+    """
+    Main program. Allow user to choose which function(s) to run.
+    """
     print(f"\n\nWelcome to Magnolia Airport's flight management portal.\n\n")
     print(f"What would you like to do?\n")
 
@@ -715,4 +722,4 @@ def main():
     main()
 
 
-main()
+start_program()
