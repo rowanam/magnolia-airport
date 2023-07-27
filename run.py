@@ -114,13 +114,21 @@ def get_all_passengers_of_flight(flight_number):
     return passengers_display_string
 
 
+def ticket_booking_program():
+    """
+    Starts the ticket booking program
+    """
+    print(create_heading("Ticket Booking"))
+
+    book_ticket()
+
+
 def book_ticket():
     """
     Add a new passenger to a flight.
     Will ask for user input to determine which flight they want to book
     and get passenger details.
     """
-    print(create_heading("Ticket Booking"))
 
     # Ask for intended destination and check that there is a flight there
     while True:
@@ -473,7 +481,7 @@ def view_passenger_details():
             update_details = input("Update passenger details? (yes/no) ").lower()
 
             if update_details == "yes":
-                get_new_passenger_detail(ws, row, name)
+                update_passenger_details_program(ws, row, name)
                 return
             elif update_details == "no":
                 print("Exiting passenger details program...")
@@ -482,11 +490,20 @@ def view_passenger_details():
                 print(f"Please type 'yes' or 'no' only.\n")
 
 
+def update_passenger_details_program(ws, row, name):
+    """
+    Starts the program to update passenger details
+    """
+    print(create_heading("Update Passenger Details"))
+
+    # Ask the user what to change and update detail in ws
+    get_new_passenger_detail(ws, row, name)
+
+
 def get_new_passenger_detail(ws, row, name):
     """
     Change passenger details
     """
-    print(create_heading("Update Passenger Details"))
 
     # Get list of all column heading detail types that can be updated (excludes booking no and checked in cells)
     detail_types = ws.row_values(1)[:6]
@@ -498,7 +515,7 @@ def get_new_passenger_detail(ws, row, name):
         if detail_type_to_update in detail_types:
             break
         elif detail_type_to_update == "none":
-            print(f"\nExiting update details program...")
+            print("Exiting update details program...")
             return
         else:
             print(f"\nDetail must be one of the following:")
@@ -525,7 +542,7 @@ def get_new_passenger_detail(ws, row, name):
             get_new_passenger_detail(ws, row, name)
             return
         elif another_detail == "no":
-            print("Exiting current program...")
+            print("Exiting update details program...")
             return
         else:
             print("Please type 'yes' or 'no' only.")
@@ -662,7 +679,7 @@ def main():
                 view_all_passengers_of_flight()
                 break
             elif control_choice == 2:
-                book_ticket()
+                ticket_booking_program()
                 break
             elif control_choice == 3:
                 check_in()
