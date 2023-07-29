@@ -241,6 +241,8 @@ Please try again.
         else:
             break
 
+    print(f"\nSearching for dates...")
+
     # Get all flights to chosen destination and number of flights
     flights_to_destination = FLIGHTS_WS.findall(destination)
     no_of_flights = len(flights_to_destination)
@@ -482,7 +484,14 @@ def validate_passenger_detail(detail_type, data):
         if detail_type == "first name(s)" or detail_type == "last name":
             formatted_info = data.title().strip()
 
-            if not all(ch.isalpha() or ch.isspace() or ch == "-" for ch in formatted_info):
+            contains_letter = False
+            for i in formatted_info:
+                if i.isalpha():
+                    contains_letter = True
+
+            if not contains_letter:
+                raise ValueError("name must contain at least one letter")
+            elif not all(ch.isalpha() or ch.isspace() or ch == "-" for ch in formatted_info):
                 raise ValueError("name must consist of letters, spaces and '-' only")
 
         elif detail_type == "date of birth":
