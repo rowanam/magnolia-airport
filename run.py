@@ -153,7 +153,9 @@ def view_all_passengers_of_flight():
     Asks the user for a flight number, then prints a readable output of all
     passengers on that flight and their details
     """
+    clear()
     print(create_heading("View All Flight Passengers"))
+    
     flight_nos_column = get_flights_ws_column_no("flight no")
     flight_nos = FLIGHTS_WS.col_values(flight_nos_column)
 
@@ -753,11 +755,12 @@ def main():
     print(f"What would you like to do?\n")
 
     control_options = {
-        1: "view all passengers for a flight", 
-        2: "book a ticket",
-        3: "check in page",
+        1: "view all flights",
+        2: "view all passengers for a flight", 
+        3: "book a ticket",
         4: "view and update passenger details",
-        5: "view all flights",
+        5: "check in a passenger",
+        6: "add luggage to a booking",
         100: "exit system"}
 
     for num, option in control_options.items():
@@ -777,20 +780,22 @@ def main():
             control_choice = int(control_choice)
 
             if control_choice == 1:
-                view_all_passengers_of_flight()
+                view_all_flights()
                 break
             elif control_choice == 2:
-                ticket_booking_program()
+                view_all_passengers_of_flight()
                 break
             elif control_choice == 3:
-                check_in()
+                ticket_booking_program()
                 break
             elif control_choice == 4:
                 view_passenger_details()
                 break
             elif control_choice == 5:
-                view_all_flights()
+                check_in()
                 break
+            elif control_choice == 6:
+                print("Building...")
             elif control_choice == 100:
                 print(f"\nGoodbye, have a nice day.")
                 exit()
