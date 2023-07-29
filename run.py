@@ -393,6 +393,8 @@ Please try again.
     flight_worksheet = SHEET.worksheet(flight_number)
     flight_worksheet.append_row(passenger_details)
 
+    clear()
+
     PRINT_GREEN(f"\nPassenger {passenger_details[0]} {passenger_details[1]} successfully added to flight {flight_number}")
 
     # 's' suffix for 0 or 2 luggage pieces
@@ -411,10 +413,10 @@ Name: {passenger_details[0]} {passenger_details[1]}
 Booking no: {passenger_details[6]}
 Luggage: {passenger_details[5]} piece{suffix}
 ----------------------------------------
-
     """
 
     print(booking_confirmation_message)
+    print(f"Note: passenger details can be updated at any time until check in.\n")
 
 
 def get_all_passenger_details(message):
@@ -806,6 +808,63 @@ def check_in():
     PRINT_GREEN(f"\n{name} successfully checked in")
 
 
+def add_luggage():
+    """
+    Add luggage to a booking
+    """
+    clear()
+    print(create_heading("Add Luggage"))
+
+    passenger_details = find_booking()
+
+    flight_ws = SHEET.worksheet(passenger_details["flight_no"])
+    passenger_row = passenger_details["row"]
+
+    # Lugagge = column 6
+    current_luggage = int(flight_ws.cell(passenger_row, 6).value)
+
+    if current_luggage == 2:
+        PRINT_GREEN(f"\nPassenger already has 2 pieces of luggage, which is the maximum.")
+    
+    elif current_luggage == 1:
+        print(f"\nPassenger currently has 1 piece of lugagge.")
+
+        while True:
+            add_luggage = input("Add 1 more? (yes/no): ").lower()
+
+            if add_luggage == "yes":
+                print(f"\nAdding luggage to booking...")
+
+                flight_ws.update_cell(passenger_row, 6, 2)
+
+                PRINT_GREEN(f"\n1 piece of luggage successfully added.")
+                return
+            elif add_luggage == "no":
+                PRINT_GREEN(f"\nBooking left at 1 piece of luggage.")
+                return
+            else:
+                type_yes_no()
+    
+    elif current_luggage == 0:
+        print(f"\nPassenger currently has no checked luggage booked.")
+
+        while True:
+            more_luggage = input(f"\nHow many pieces of luggage should be added? ")
+
+            if more_luggage == "0" or more_luggage == "none":
+                PRINT_GREEN(f"\nBooking left at with no checked luggage.")
+                return
+            elif more_luggage == "1" or more_luggage == "2":
+                print(f"\nAdding luggage to booking...")
+
+                flight_ws.update_cell(passenger_row, 6, more_luggage)
+
+                PRINT_GREEN(f"\nLuggage successfully added.")
+                return
+            else:
+                type_yes_no()
+
+
 def start_program():
     """
     Program start up. Print banner and call main() function.
@@ -875,7 +934,8 @@ def main():
                 check_in()
                 break
             elif control_choice == 6:
-                print("Building...")
+                add_luggage()
+                break
             elif control_choice == 100:
                 print(f"\nGoodbye, have a nice day.")
                 exit()
