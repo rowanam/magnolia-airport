@@ -36,6 +36,13 @@ PRINT_RED = lambda x: cprint(x, "red")
 PRINT_GREEN = lambda x: cprint(x, "green")
 
 
+def type_yes_no():
+    """
+    Micro function to tell user to input 'yes' or 'no' only
+    """
+    PRINT_RED(f"Please type 'yes' or 'no' only.\n")
+
+
 def get_flights_ws_column_no(heading):
     """
     Get the column number of the passed heading in the flights worksheet.
@@ -79,6 +86,56 @@ def create_heading(title):
     """
 
     return heading
+
+
+def format_flight_date(date_str):
+    """
+    Pass a date string in format YYYY-MM-DD, returns in format e.g. Jun 23, 2023
+    """
+    flight_date_object = datetime.strptime(date_str, '%Y-%m-%d').date()
+    formatted_flight_date = flight_date_object.strftime("%b %-d, %Y")
+
+    return formatted_flight_date
+
+
+def view_all_flights():
+    """
+    Gets all available flights and returns as a readable string
+    """
+    print(create_heading("View Flights"))
+
+    print(f"Retrieving flights...\n")
+
+    all_flights = FLIGHTS_WS.get_all_records()
+    
+    flights_details_lines = []
+
+    for flight in all_flights:
+        destination = flight["destination"]
+        date = format_flight_date(flight["date"])
+        departure_time = flight["departure time"]
+        flight_no = flight["flight no"]
+
+        flight_line = f"   {destination}: on {date} at {departure_time}, flight no. {flight_no}\n"
+        flights_details_lines.append(flight_line)
+    
+    flights_details_string = "\n".join(flights_details_lines)
+
+    readable_flights_list = f"Flight to...\n\n" + flights_details_string
+    print(readable_flights_list)
+
+    while True:
+        book_a_ticket = input("Would you like to make a booking? (yes/no) ")
+
+        if book_a_ticket == "yes":
+            print("Taking you to ticket booking program...")
+            book_ticket()
+            return
+        elif book_a_ticket == "no":
+            print("Exiting flight viewing...")
+            return
+        else:
+            type_yes_no()
 
 
 def view_all_passengers_of_flight():
@@ -195,9 +252,9 @@ Please try again.
                     print(f"\nExiting ticket booking...")
                     return
                 else:
-                    PRINT_RED(f"Please type 'yes' or 'no' only\n")
+                    type_yes_no()
         else:
-            PRINT_RED(f"Please type 'yes' or 'no' only\n")
+            type_yes_no()
         
     # Ask user questions to get passenger details
     print(f"\nPassenger Details")
@@ -245,8 +302,7 @@ Please try again.
     # Get and format flight date
     flight_dates_column = get_flights_ws_column_no("date")
     flight_date_str = FLIGHTS_WS.cell(flight_row, flight_dates_column).value
-    flight_date = datetime.strptime(flight_date_str, '%Y-%m-%d').date()
-    formatted_flight_date = flight_date.strftime("%b %-d, %Y")
+    formatted_flight_date = format_flight_date(flight_date_str)
 
     # 's' suffix for 0 or 2 luggage pieces
     suffix = "s"
@@ -494,7 +550,7 @@ def view_passenger_details():
                 print("Exiting passenger details program...")
                 return
             else:
-                PRINT_RED(f"Please type 'yes' or 'no' only.\n")
+                type_yes_no()
 
 
 def update_passenger_details_program(ws, row, name):
@@ -552,7 +608,7 @@ def get_new_passenger_detail(ws, row, name):
             print("Exiting update details program...")
             return
         else:
-            PRINT_RED(f"Please type 'yes' or 'no' only.\n")
+            type_yes_no()
 
 
 def update_passenger_detail_in_ws(ws, row, column, data, name):
@@ -634,7 +690,7 @@ def check_in():
             print("Returning to home...")
             return
         else:
-            PRINT_RED("Please print 'yes' or 'no' only")
+            type_yes_no()
 
     # See if passenger is already checked in
     checked_in = see_if_checked_in(ws, row)
@@ -682,6 +738,7 @@ def main():
         2: "book a ticket",
         3: "check in page",
         4: "view and update passenger details",
+        5: "view all flights",
         100: "exit system"}
 
     for num, option in control_options.items():
@@ -711,6 +768,9 @@ def main():
                 break
             elif control_choice == 4:
                 view_passenger_details()
+                break
+            elif control_choice == 5:
+                view_all_flights()
                 break
             elif control_choice == 100:
                 print(f"\nGoodbye, have a nice day.")
