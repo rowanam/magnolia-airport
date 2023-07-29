@@ -241,19 +241,90 @@ Please try again.
         else:
             break
 
-    flight_row = FLIGHTS_WS.find(destination).row
-    flight_times_column = get_flights_ws_column_no("departure time")
-    flight_time = FLIGHTS_WS.cell(flight_row, flight_times_column).value
+    # Get all flights to chosen destination and number of flights
+    flights_to_destination = FLIGHTS_WS.findall(destination)
+    no_of_flights = len(flights_to_destination)
 
-    # Ask user if the flight at a certain time should be booked
+
+    def get_date_and_time(flight_row):
+        """
+        Retrieve the date and time of flight in passed row
+        """
+        flight_times_column = get_flights_ws_column_no("departure time")
+        flight_dates_column = get_flights_ws_column_no("date")
+        flight_time = FLIGHTS_WS.cell(flight_row, flight_times_column).value
+        flight_date = FLIGHTS_WS.cell(flight_row, flight_dates_column).value
+        readable_flight_date = format_flight_date(flight_date)
+
+        flight_details = {
+            "date": readable_flight_date,
+            "time": flight_time
+        }
+
+        return flight_details
+
+
+    # Variable "flight_row" determines which flight the passenger gets added to
+    # Based on number of available flights to destination:
+    # - if only one flight, assign flight_row to the row of that flight
+    # - if multiple available flights, show the available flights, 
+    #   and later will ask user to choose, and assigns that to flight_row
+    # In either case, ask the user if the flight options are ok
+    if no_of_flights == 1:
+        flight_row = flights_to_destination[0].row
+        flight_details = get_date_and_time(flight_row)
+        time = flight_details["time"]
+        date = flight_details["date"]
+
+        report_flight_info = f"We have a flight to {destination} on {date} at {time}."
+        continue_booking_q = "Is that ok? (yes/no): "
+    else:
+        flight_rows = [flight.row for flight in flights_to_destination]
+        flights_details = [get_date_and_time(row) for row in flight_rows]
+        
+        report_flight_info = f"We have flights to {destination} on:"
+
+        for flight in flights_details:
+            report_flight_info += f"\n   - {flight['date']} at {flight['time']}"
+
+        continue_booking_q = "Is one of those ok? (yes/no): "
+
+    # Ask user if the flight at a certain time should be booked,
+    # or to choose between multiple flights
     # If yes, continue booking
-    # If no, function stops and code returns to main program
+    # If no acceptable flights, function stops and code returns to main program
     while True:
-        print(f"\nWe have a flight to {destination} at {flight_time} today.")
-        continue_booking = input("Is that ok? (yes/no): ")
+        # Show flights information and ask for user input depending on number of flights
+        print(f"\n{report_flight_info}")
+        continue_booking = input(f"\n{continue_booking_q}")
 
+        # Continue booking if there is an acceptable flight
         if continue_booking.lower() == "yes":
-            break
+            # If only one flight, continue with that flight
+            if no_of_flights == 1:
+                break
+            # If multiple available flights, choose one then continue booking
+            else:
+                while True:
+                    print(f"\nChoose a flight...")
+
+                    for flight in flights_details:
+                        print(f"   {flights_details.index(flight) + 1}) {flight['date']} at {flight['time']}")
+
+                    flight_option = input(f"\nType the number: ")
+
+                    try:
+                        flight_option_index = int(flight_option) - 1
+                        flight_row = flight_rows[flight_option_index]
+                    except:
+                        PRINT_RED("Please type one of the numbers above.")
+                    else:
+                        break
+                
+                break
+        
+        # If displayed flights are not acceptable, ask whether to book a different flight
+        # or return to main menu
         elif continue_booking.lower() == "no":
             while True:
                 new_request = input(f"\nWould you like to book a different flight? (yes/no) ")
@@ -271,12 +342,19 @@ Please try again.
                     return
                 else:
                     type_yes_no()
+        
+        # Prompt user to answer yes or no only
         else:
             type_yes_no()
+
+    # Create a message to display flight info on passenger details page
+    chosen_flight_details = get_date_and_time(flight_row)
+    chosen_flight_date = chosen_flight_details["date"]
+    chosen_flight_time = chosen_flight_details["time"]
+    get_details_message = f"Booking a ticket bound for {destination}: {chosen_flight_date} at {chosen_flight_time}"
         
     # Ask user questions to get passenger details
-    print(f"\nPassenger Details")
-    passenger_details = get_all_passenger_details()
+    passenger_details = get_all_passenger_details(get_details_message)
 
     # Pull flight number from "flights" worksheet
     flight_number = FLIGHTS_WS.cell(flight_row, 1).value
@@ -317,11 +395,6 @@ Please try again.
 
     PRINT_GREEN(f"\nPassenger {passenger_details[0]} {passenger_details[1]} successfully added to flight {flight_number}")
 
-    # Get and format flight date
-    flight_dates_column = get_flights_ws_column_no("date")
-    flight_date_str = FLIGHTS_WS.cell(flight_row, flight_dates_column).value
-    formatted_flight_date = format_flight_date(flight_date_str)
-
     # 's' suffix for 0 or 2 luggage pieces
     suffix = "s"
     if passenger_details[5] == 1:
@@ -330,9 +403,9 @@ Please try again.
     booking_confirmation_message = f"""
 
 ----------------------------------------
-YOUR BOOKING
+BOOKING DETAILS
 
-Flight no. {flight_number} to {destination} on {formatted_flight_date} at {flight_time}
+Flight no. {flight_number} to {destination} on {chosen_flight_date} at {chosen_flight_time}
 
 Name: {passenger_details[0]} {passenger_details[1]}
 Booking no: {passenger_details[6]}
@@ -344,12 +417,13 @@ Luggage: {passenger_details[5]} piece{suffix}
     print(booking_confirmation_message)
 
 
-def get_all_passenger_details():
+def get_all_passenger_details(message):
     """
     Gets passenger details and returns them in a list
     """
     clear()
     print(create_heading("Passenger Details"))
+    print(message)
 
     passenger_details = []
     details = ["first name(s)", "last name", "date of birth", "passport no", "nationality", "luggage"]
