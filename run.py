@@ -62,7 +62,8 @@ def get_flights_ws_column_no(heading):
 
 def readable_passenger_details(passenger):
     """
-    Create a string with the details for the passed passenger, printed in a human-readable format
+    Create a string with the details for the passed passenger, printed in a human-readable format.
+    Passenger to be passed as a dictionary.
     """
     name = f"{passenger['first name(s)']} {passenger['last name']}"
     readable_details = name
@@ -807,6 +808,50 @@ def check_in():
     if checked_in:
         PRINT_GREEN(f"\n{name} is already checked in.")
         return
+
+    # Check if passenger wants to update details before checking in
+    print(f"\nWarning: once checked in, passenger details can no longer be updated.")
+
+    first_names = ws.cell(row, 1).value
+    last_name = ws.cell(row, 2).value
+    name = f"{first_names} {last_name}"
+    date_of_birth = ws.cell(row, 3).value
+    formatted_birth_date = format_flight_date(date_of_birth)
+    passport_no = ws.cell(row, 4).value
+    nationality = ws.cell(row, 5).value
+    print(f"""
+Current details:
+   {name}
+   Date of birth: {formatted_birth_date}
+   Passport no: {passport_no}
+   Nationality: {nationality}
+""")
+
+    while True:
+        change_details = input("Change any details before checking in? (yes/no) ").lower()
+
+        if change_details == "yes":
+            update_passenger_details_program(ws, row, name)
+
+            clear()
+            print(create_heading("Finish Check In"))
+            print("Details successfully changed.")
+
+            while True:
+                continue_check_in = input(f"\nProceed with check in? (yes/no) ").lower()
+
+                if continue_check_in == "yes":
+                    break
+                elif continue_check_in == "no":
+                    print(f"\nExiting check in...")
+                    return
+                else:
+                    type_yes_no()
+            break
+        elif change_details == "no":
+            break
+        else:
+            type_yes_no()
 
     print(f"\nChecking in...")
     
