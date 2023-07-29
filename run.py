@@ -155,7 +155,7 @@ def view_all_passengers_of_flight():
     """
     clear()
     print(create_heading("View All Flight Passengers"))
-    
+
     flight_nos_column = get_flights_ws_column_no("flight no")
     flight_nos = FLIGHTS_WS.col_values(flight_nos_column)
 
@@ -207,28 +207,34 @@ def book_ticket():
     and get passenger details.
     """
 
+    # From spreadsheet, pull all flight destinations
+    destinations_column = get_flights_ws_column_no("destination")
+    destinations_list = FLIGHTS_WS.col_values(destinations_column)[1:]
+    destinations_set = set(destinations_list)
+
+    # Make destinations readable
+    destinations_alphabetized = sorted(destinations_set)
+    readable_destinations_list = ", ".join(destinations_alphabetized)
+    view_available_destinations = f"""Available destinations:
+
+---
+{readable_destinations_list}
+---
+"""
+
+    print(view_available_destinations)
+
     # Ask for intended destination and check that there is a flight there
     while True:
         # Get user input for flight destination
-        destination = input("What is the destination? ").capitalize()
-
-        # From spreadsheet, pull all flight destinations
-        destinations_column = get_flights_ws_column_no("destination")
-        destinations_list = FLIGHTS_WS.col_values(destinations_column)[1:]
-        destinations_set = set(destinations_list)
-
-        readable_destinations = ", ".join(destinations_set)
+        destination = input("Select a destination: ").capitalize()
 
         # If the desired destination not available, inform user of this and loop starts again
         # If the destination is available, loop breaks and function continues
         if destination not in destinations_set:
             PRINT_RED(f"\nNo flights to {destination}.")
             print(f"""
-Available destinations:
-
----
-{readable_destinations}
----
+{view_available_destinations}
 
 Please try again.
 """)
@@ -261,7 +267,6 @@ Please try again.
                     # it will end
                     return
                 elif new_request.lower() == "no":
-                    print(f"\nGoodbye, have a nice day")
                     print(f"\nExiting ticket booking...")
                     return
                 else:
@@ -731,6 +736,7 @@ def start_program():
     """
     Program start up. Print banner and call main() function.
     """
+    clear()
 
     # Open the start-up banner
     with open("banner.txt") as f:
@@ -760,7 +766,7 @@ def main():
         3: "book a ticket",
         4: "view and update passenger details",
         5: "check in a passenger",
-        6: "add luggage to a booking",
+        6: "add luggage",
         100: "exit system"}
 
     for num, option in control_options.items():
