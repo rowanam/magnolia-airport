@@ -10,6 +10,8 @@ from pycountry import countries
 
 from termcolor import colored, cprint
 
+import os
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -34,6 +36,13 @@ COUNTRIES = [country.name.upper() for country in countries]
 # Print in red or green to terminal, for error or success messages
 PRINT_RED = lambda x: cprint(x, "red")
 PRINT_GREEN = lambda x: cprint(x, "green")
+
+
+def clear():
+    """
+    Clears terminal
+    """
+    os.system("clear")
 
 
 def type_yes_no():
@@ -102,6 +111,7 @@ def view_all_flights():
     """
     Gets all available flights and returns as a readable string
     """
+    clear()
     print(create_heading("View Flights"))
 
     print(f"Retrieving flights...\n")
@@ -129,7 +139,7 @@ def view_all_flights():
 
         if book_a_ticket == "yes":
             print("Taking you to ticket booking program...")
-            book_ticket()
+            ticket_booking_program()
             return
         elif book_a_ticket == "no":
             print("Exiting flight viewing...")
@@ -182,6 +192,7 @@ def ticket_booking_program():
     """
     Starts the ticket booking program
     """
+    clear()
     print(create_heading("Ticket Booking"))
 
     book_ticket()
@@ -330,6 +341,9 @@ def get_all_passenger_details():
     """
     Gets passenger details and returns them in a list
     """
+    clear()
+    print(create_heading("Passenger Details"))
+
     passenger_details = []
     details = ["first name(s)", "last name", "date of birth", "passport no", "nationality", "luggage"]
 
@@ -502,6 +516,7 @@ def view_passenger_details():
     View a passenger's booking details and ask if anything needs to be changed
     if not already checked in
     """
+    clear()
     print(create_heading("View Passenger Details"))
 
     # Get passenger details and continue based on return value
@@ -557,6 +572,7 @@ def update_passenger_details_program(ws, row, name):
     """
     Starts the program to update passenger details
     """
+    clear()
     print(create_heading("Update Passenger Details"))
 
     # Ask the user what to change and update detail in ws
@@ -650,6 +666,7 @@ def check_in():
     """
     Check a passenger in
     """
+    clear()
     print(create_heading("Check In"))
 
     # Get passenger details and continue based on return value
@@ -730,6 +747,8 @@ def main():
     """
     Main program. Allow user to choose which function(s) to run.
     """
+    clear()
+
     print(f"\n\nWelcome to Magnolia Airport's flight management portal.\n\n")
     print(f"What would you like to do?\n")
 
