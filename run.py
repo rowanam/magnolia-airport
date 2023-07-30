@@ -329,7 +329,7 @@ def book_ticket():
         report_flight_info = f"We have flights to {destination} on:"
 
         for flight in flights_details:
-            report_flight_info += f"\n   - {flight['date']} at {flight['time']}"
+            report_flight_info += f"\n   {flights_details.index(flight) + 1}) {flight['date']} at {flight['time']}"
 
         continue_booking_q = "Is one of those ok? (yes/no): "
 
@@ -352,12 +352,7 @@ def book_ticket():
             # If multiple available flights, choose one then continue booking
             else:
                 while True:
-                    print(f"\nChoose a flight:")
-
-                    for flight in flights_details:
-                        print(f"   {flights_details.index(flight) + 1}) {flight['date']} at {flight['time']}")
-
-                    flight_option = input(f"\n{Q_S}Type the number: ")
+                    flight_option = input(f"\n{Q_S}Type the number of the flight to be booked: ")
 
                     try:
                         flight_option_index = int(flight_option) - 1
