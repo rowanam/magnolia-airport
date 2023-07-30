@@ -18,3 +18,7 @@ Magnolia outline in start-up banner was created by taking an image from Freepik 
 Image by <a href="https://www.freepik.com/free-vector/hand-drawn-simple-flower-outline-illustration_24999034.htm#query=magnolia%20outline%20simple&position=0&from_view=search&track=ais">Freepik</a>
 
 <a href="https://asciiart.club/">ASCIIart.club</a>
+
+### Slow print function
+
+Slow print function taken from this <a href="https://stackoverflow.com/questions/4099422/printing-slowly-simulate-typing">stackoverflow post.</a>

@@ -16,6 +16,10 @@ from halo import Halo
 
 from tabulate import tabulate
 
+# Modules for slow_print and creating time delay
+import sys
+from time import sleep
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -54,6 +58,18 @@ def clear():
     Clears terminal
     """
     os.system("clear")
+
+
+def print_slow(text):
+    """
+    Print text slowly (one letter at a time)
+    """
+    for letter in text:
+        sys.stdout.write(letter)
+        sys.stdout.flush()
+        sleep(0.03)
+    
+    return ""
 
 
 def type_yes_no():
@@ -1006,7 +1022,9 @@ def main():
     """
     clear()
 
-    print(f"\n\nWelcome to Magnolia Airport's flight management portal.\n\n")
+    print_slow(f"\n\nWelcome to Magnolia Airport's flight management portal.\n\n")
+    sleep(1)
+
     print(f"Choose a program:\n")
 
     # Options menus
