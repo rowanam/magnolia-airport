@@ -221,7 +221,8 @@ def get_all_passengers_of_flight(flight_number):
     View all passengers and their details on the flight with the provided number
     """
 
-    spinner = SPINNER(f"\nRetreiving passenger details...")
+    print()
+    spinner = SPINNER("Retreiving passenger details...")
     spinner.start()
 
     worksheet_to_view = SHEET.worksheet(flight_number)
@@ -229,11 +230,14 @@ def get_all_passengers_of_flight(flight_number):
     # Get passenger info as a list of dictionaries
     passengers = worksheet_to_view.get_all_records()
 
-    passengers_display_string = ""
+    if len(passengers) == 0:
+        passengers_display_string = f"No passengers on flight {flight_number}."
+    else:
+        passengers_display_string = ""
 
-    for passenger in passengers:
-        details = readable_passenger_details(passenger)["readable_details"]
-        passengers_display_string += f"{details}\n"
+        for passenger in passengers:
+            details = readable_passenger_details(passenger)["readable_details"]
+            passengers_display_string += f"{details}\n"
 
     spinner.stop()
     
