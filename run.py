@@ -618,6 +618,9 @@ def find_booking():
     while True:
         booking_no = input(f"{Q_S}Please enter the booking number: ")
 
+        if booking_no == "main":
+            return "main"
+
         print()
         booking_searching_spinner = SPINNER(f"Searching for booking...")
         booking_searching_spinner.start()
@@ -635,7 +638,7 @@ def find_booking():
             break
         else:
             booking_searching_spinner.stop()
-            PRINT_RED(f"Booking number not found. Please try again.\n")
+            PRINT_RED(f"Booking number not found. Please try again, or type 'main' to exit and return to the main program.\n")
 
     ws = SHEET.worksheet(flight_no)
 
@@ -654,6 +657,7 @@ def find_booking():
         # Original function will either call again or return to main() function
         while True:
             choice = input(f"{Q_S}Press 1 to try again or 2 to return to main page: ")
+            print()
 
             if choice == "1":
                 return
@@ -943,7 +947,19 @@ def add_luggage():
     clear()
     print(create_heading("Add Luggage"))
 
-    passenger_details = find_booking()
+    # Get passenger details and continue based on return value
+    while True:
+        passenger_details = find_booking()
+
+        # If no passenger found, run the loop again and call find_booking()
+        if passenger_details == None:
+            pass
+        # If find_booking() returned "main", end check_in and return to main function
+        elif passenger_details == "main":
+            return
+        # Otherwise, continue with check in
+        else:
+            break
 
     flight_ws = SHEET.worksheet(passenger_details["flight_no"])
     passenger_row = passenger_details["row"]
@@ -1022,7 +1038,7 @@ def main():
     """
     clear()
 
-    print_slow(f"\n\nWelcome to Magnolia Airport's passenger management portal.\n\n")
+    print_slow(f"\nWelcome to Magnolia Airport's passenger management portal.\n\n")
     sleep(1)
 
     print(f"Choose a program:\n")
@@ -1034,7 +1050,7 @@ def main():
         (3, "Book a ticket"),
         (4, "View and update passenger details"),
         (5, "Check in"),
-        (6, "Ddd luggage")
+        (6, "Add luggage")
     ]
 
     exit_option = [
