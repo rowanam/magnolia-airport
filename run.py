@@ -14,6 +14,8 @@ import os
 
 from halo import Halo
 
+from tabulate import tabulate
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -107,12 +109,16 @@ def create_heading(title):
     return heading
 
 
-def format_flight_date(date_str):
+def format_flight_date(date_str, include_week_day):
     """
     Pass a date string in format YYYY-MM-DD, returns in format e.g. Jun 23, 2023
     """
     flight_date_object = datetime.strptime(date_str, '%Y-%m-%d').date()
-    formatted_flight_date = flight_date_object.strftime("%b %-d, %Y")
+
+    if include_week_day:
+        formatted_flight_date = flight_date_object.strftime("%a, %b %-d, %Y")
+    else:
+        formatted_flight_date = flight_date_object.strftime("%b %-d, %Y")
 
     return formatted_flight_date
 
@@ -124,32 +130,37 @@ def view_all_flights():
     clear()
     print(create_heading("View Flights"))
 
-    spinner = SPINNER("Retrieving flights...")
-    spinner.start()
+    # Start loading spinner
+    finding_flights_spinner = SPINNER("Retrieving flights...")
+    finding_flights_spinner.start()
 
+    # Get all flights info as a list of dicts
     all_flights = FLIGHTS_WS.get_all_records()
-    
-    flights_details_lines = []
 
+    # Remove keys and data that doesn't need to be printed to terminal,
+    # and format flight date
     for flight in all_flights:
-        destination = flight["destination"]
-        date = format_flight_date(flight["date"])
-        departure_time = flight["departure time"]
-        flight_no = flight["flight no"]
+        # Get a set of the keys to be removed
+        all_keys = set(flight.keys())
+        desired_keys = {"flight no", "destination", "date", "departure time"}
+        other_keys = all_keys - desired_keys
 
-        flight_line = f"   {destination}: on {date} at {departure_time}, flight no. {flight_no}\n"
-        flights_details_lines.append(flight_line)
+        for key in other_keys:
+            del flight[key]
+
+        # Format flight date
+        flight["date"] = format_flight_date(flight["date"], True)
+
+    # Stop loading spinner
+    finding_flights_spinner.stop()
+
+    # Print table of flights
+    print(tabulate(all_flights, headers="keys", tablefmt="fancy_grid"))
     
-    flights_details_string = "\n".join(flights_details_lines)
-
-    readable_flights_list = f"Flight to...\n\n" + flights_details_string
-
-    spinner.stop()
-
-    print(readable_flights_list)
-
+    # Ask if user would like to make a booking, then either call ticket booking
+    # or return to main program
     while True:
-        book_a_ticket = input(f"{Q_S}Would you like to make a booking? (yes/no) ")
+        book_a_ticket = input(f"\n{Q_S}Would you like to make a booking? (yes/no) ")
 
         if book_a_ticket == "yes":
             print("Taking you to ticket booking program...")
@@ -241,17 +252,20 @@ def book_ticket():
 
     # Make destinations readable
     destinations_alphabetized = sorted(destinations_set)
-    readable_destinations_list = ", ".join(destinations_alphabetized)
-    view_available_destinations = f"""Available destinations:
+    readable_destinations_list = f"Available destinations:\n"
+    for destination in destinations_alphabetized:
+        readable_destinations_list += f"\n   • {destination}"
+    # readable_destinations_list = ", ".join(destinations_alphabetized)
+#     view_available_destinations = f"""Available destinations:
 
----
-{readable_destinations_list}
----
-"""
+# ---
+# {readable_destinations}
+# ---
+# """
 
     loading_destinations_spinner.stop()
 
-    print(view_available_destinations)
+    print(f"{readable_destinations_list}\n")
 
     # Ask for intended destination and check that there is a flight there
     while True:
@@ -261,12 +275,9 @@ def book_ticket():
         # If the desired destination not available, inform user of this and loop starts again
         # If the destination is available, loop breaks and function continues
         if destination not in destinations_set:
-            PRINT_RED(f"\nNo flights to {destination}.")
-            print(f"""
-{view_available_destinations}
-
-Please try again.
-""")
+            PRINT_RED(f"No flights to {destination}.\n")
+            print(readable_destinations_list)
+            PRINT_RED(f"\nPlease try again.\n")
         else:
             break
 
@@ -287,7 +298,7 @@ Please try again.
         flight_dates_column = get_flights_ws_column_no("date")
         flight_time = FLIGHTS_WS.cell(flight_row, flight_times_column).value
         flight_date = FLIGHTS_WS.cell(flight_row, flight_dates_column).value
-        readable_flight_date = format_flight_date(flight_date)
+        readable_flight_date = format_flight_date(flight_date, False)
 
         flight_details = {
             "date": readable_flight_date,
@@ -1001,23 +1012,27 @@ def main():
     clear()
 
     print(f"\n\nWelcome to Magnolia Airport's flight management portal.\n\n")
-    print(f"What would you like to do?\n")
+    print(f"Choose a program:\n")
 
-    control_options = {
-        1: "view all flights",
-        2: "view all passengers for a flight", 
-        3: "book a ticket",
-        4: "view and update passenger details",
-        5: "check in a passenger",
-        6: "add luggage",
-        100: "exit system"}
+    # Options menus
+    control_options = [
+        (1, "View all flights"),
+        (2, "View all passengers for a flight"), 
+        (3, "Book a ticket"),
+        (4, "View and update passenger details"),
+        (5, "Check in"),
+        (6, "Ddd luggage")
+    ]
 
-    for num, option in control_options.items():
-        if num == 100:
-            print(f"\n   {num}) {option.capitalize()}")
-        else:
-            print(f"   {num}) {option.capitalize()}")
+    exit_option = [
+        (100, "Exit portal")
+    ]
+    
+    # Print options in table format
+    print(tabulate(control_options, tablefmt="rounded_grid"))
+    print(tabulate(exit_option, tablefmt="rounded_grid"))
 
+    # Ask user to choose a program option
     while True:
         control_choice = input(f"\n{Q_S}Type an option number here: ")
 
