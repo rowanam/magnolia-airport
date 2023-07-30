@@ -264,12 +264,7 @@ ADD PICTURE
 ### Imported modules/libraries
 
 - [gspread](https://docs.gspread.org/en/v5.10.0/) for manipulating Google Sheets spreadsheet
-- [random](https://docs.python.org/3/library/random.html)
-- string
-- datetime
-- time
-- os
-- sys
+- [google auth] * - add URL
 - [pycountry](https://pypi.org/project/pycountry/) to get a list of world countries
 - [termcolor](https://pypi.org/project/termcolor/) to print to the terminal in color
 - [halo](https://github.com/manrajgrover/halo) to add spinning icons during loading
