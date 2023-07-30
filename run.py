@@ -1022,7 +1022,7 @@ def main():
     """
     clear()
 
-    print_slow(f"\n\nWelcome to Magnolia Airport's flight management portal.\n\n")
+    print_slow(f"\n\nWelcome to Magnolia Airport's passenger management portal.\n\n")
     sleep(1)
 
     print(f"Choose a program:\n")

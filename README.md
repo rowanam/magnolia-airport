@@ -1,3 +1,29 @@
+# Magnolia Airport Passenger Management Portal
+
+This program provides a simple command-line interface portal for a small regional airport somewhere in the southern United States. Flight details and booked passenger data is stored in a Google Sheets spreadsheet and the portal provides programs to view information, make bookings, change details and check in.
+
+View the deployed program here - [link]() (not yet live)
+
+ADD PICTURE
+
+## User Experience
+
+The program is designed to be used by airport staff, for example at the check-in counter. Therefore it is not intended to be end user friendly and cuts down on explanations of questions and aesthetic additions in favor of serving a user who sees the same program every day.
+
+However, the program should be intuitive and easy to use, and allow frictionless data entry and navigation between different programs.
+
+### Moving through the portal
+
+The portal opens with a menu of options, which the user can select to start different programs (book a ticket, check in, etc.).
+
+Each program will ask one or more questions of the user, print data to the terminal, and provide options to complete certain tasks or return to the main program.
+
+## Features
+
+## Technologies Used
+
+## Google API Setup
+
 ## Bugs
 
 ### Booking different flight loop
@@ -8,6 +34,10 @@ The function works if the user says "no" to both questions the first time. But h
 
 26.7
 Fixed the bug by adding a return statement in an if statement in an inner loop in the function. Right above this return statement, the entire function that was currently runnng was called again, which was intended to reset the current program but I believe instead created a second instance of that function running, and when that ended the first function instance kept runnng. Seems to be resolved by adding the return statement to stop the "first" function running after the second ends, but there is probably a more elegant solution.
+
+## Testing
+
+## Deployment
 
 ## Attributions
 
