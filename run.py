@@ -12,6 +12,8 @@ from termcolor import colored, cprint
 
 import os
 
+from halo import Halo
+
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -36,6 +38,10 @@ COUNTRIES = [country.name.upper() for country in countries]
 # Print in red or green to terminal, for error or success messages
 PRINT_RED = lambda x: cprint(x, "red")
 PRINT_GREEN = lambda x: cprint(x, "green")
+
+# Spinner for run time consuming code
+SPINNER = lambda x: Halo(text=x, spinner="earth")
+LOADING_SPINNER = Halo(text="Loading...", spinner="earth")
 
 
 def clear():
@@ -115,7 +121,8 @@ def view_all_flights():
     clear()
     print(create_heading("View Flights"))
 
-    print(f"Retrieving flights...\n")
+    spinner = SPINNER("Retrieving flights...")
+    spinner.start()
 
     all_flights = FLIGHTS_WS.get_all_records()
     
@@ -133,6 +140,9 @@ def view_all_flights():
     flights_details_string = "\n".join(flights_details_lines)
 
     readable_flights_list = f"Flight to...\n\n" + flights_details_string
+
+    spinner.stop()
+
     print(readable_flights_list)
 
     while True:
@@ -157,8 +167,12 @@ def view_all_passengers_of_flight():
     clear()
     print(create_heading("View All Flight Passengers"))
 
+    LOADING_SPINNER.start()
+
     flight_nos_column = get_flights_ws_column_no("flight no")
     flight_nos = FLIGHTS_WS.col_values(flight_nos_column)
+
+    LOADING_SPINNER.stop()
 
     while True:
         flight = input("Please input a flight number: ")
@@ -177,6 +191,10 @@ def get_all_passengers_of_flight(flight_number):
     """
     View all passengers and their details on the flight with the provided number
     """
+
+    spinner = SPINNER(f"\nRetreiving passenger details...")
+    spinner.start()
+
     worksheet_to_view = SHEET.worksheet(flight_number)
 
     # Get passenger info as a list of dictionaries
@@ -187,6 +205,8 @@ def get_all_passengers_of_flight(flight_number):
     for passenger in passengers:
         details = readable_passenger_details(passenger)["readable_details"]
         passengers_display_string += f"{details}\n"
+
+    spinner.stop()
     
     return passengers_display_string
 
@@ -208,6 +228,9 @@ def book_ticket():
     and get passenger details.
     """
 
+    loading_destinations_spinner = SPINNER("Loading destinations...")
+    loading_destinations_spinner.start()
+
     # From spreadsheet, pull all flight destinations
     destinations_column = get_flights_ws_column_no("destination")
     destinations_list = FLIGHTS_WS.col_values(destinations_column)[1:]
@@ -222,6 +245,8 @@ def book_ticket():
 {readable_destinations_list}
 ---
 """
+
+    loading_destinations_spinner.stop()
 
     print(view_available_destinations)
 
@@ -242,7 +267,8 @@ Please try again.
         else:
             break
 
-    print(f"\nSearching for dates...")
+    date_search_spinner = SPINNER(f"\nSearching for dates...")
+    date_search_spinner.start()
 
     # Get all flights to chosen destination and number of flights
     flights_to_destination = FLIGHTS_WS.findall(destination)
@@ -291,6 +317,8 @@ Please try again.
             report_flight_info += f"\n   - {flight['date']} at {flight['time']}"
 
         continue_booking_q = "Is one of those ok? (yes/no): "
+
+    date_search_spinner.stop()
 
     # Ask user if the flight at a certain time should be booked,
     # or to choose between multiple flights
@@ -390,13 +418,18 @@ Please try again.
     # Add booking number to passenger details
     passenger_details.append(booking_no)
 
-    print(f"\nAdding passenger to flight...")
+    adding_passenger_spinner = SPINNER("Adding passenger to flight...")
+    adding_passenger_spinner.start()
 
     # Add the passenger details to a new row in the flight's worksheet
     flight_worksheet = SHEET.worksheet(flight_number)
     flight_worksheet.append_row(passenger_details)
 
+    adding_passenger_spinner.stop()
+
     clear()
+
+    print(create_heading("Booking Confirmation"))
 
     PRINT_GREEN(f"\nPassenger {passenger_details[0]} {passenger_details[1]} successfully added to flight {flight_number}")
 
@@ -558,7 +591,9 @@ def find_booking():
     while True:
         booking_no = input("Please enter the booking number: ")
 
-        print(f"\nSearching for booking...")
+        print()
+        booking_searching_spinner = SPINNER(f"Searching for booking...")
+        booking_searching_spinner.start()
 
         flight_no = None
         
@@ -572,6 +607,7 @@ def find_booking():
         if flight_no:
             break
         else:
+            booking_searching_spinner.stop()
             PRINT_RED(f"Booking number not found. Please try again.\n")
 
     ws = SHEET.worksheet(flight_no)
@@ -583,6 +619,8 @@ def find_booking():
 
     # Check if last name input matches last name in booking
     if entered_last_name != booking_last_name:
+        booking_searching_spinner.stop()
+
         PRINT_RED(f"Last name does not match booking.\n")
 
         # Return to where the function was called, passing either None or "main"
@@ -600,6 +638,8 @@ def find_booking():
     details["flight_no"] = flight_no
     details["booking_no"] = booking_no
     details["row"] = row
+
+    booking_searching_spinner.stop()
 
     return details
 
@@ -646,7 +686,7 @@ def view_passenger_details():
     if checked_in:
         PRINT_GREEN(f"{name} is already checked in. Passenger details can no longer be changed.\n")
     else:
-        PRINT_RED(f"Not yet checked in.\n")
+        PRINT_GREEN(f"Not yet checked in.\n")
 
         while True:
             update_details = input("Update passenger details? (yes/no) ").lower()
@@ -682,7 +722,7 @@ def get_new_passenger_detail(ws, row, name):
 
     # Ask user to choose a detail type to be changed
     while True:
-        detail_type_to_update = input("What detail needs to be changed? ").strip()
+        detail_type_to_update = input(f"\nWhat detail needs to be changed? ").strip()
 
         if detail_type_to_update in detail_types:
             break
@@ -724,7 +764,9 @@ def update_passenger_detail_in_ws(ws, row, column, data, name):
     """
     Update a passenger's booking detail in flight ws
     """
-    print(f"\nUpdating passenger data...")
+    print()
+    updating_passenger_spinner = SPINNER("Updating passenger data...")
+    updating_passenger_spinner.start()
 
     # Get the original value to show user the change
     original_value = ws.cell(row,column).value
@@ -734,6 +776,8 @@ def update_passenger_detail_in_ws(ws, row, column, data, name):
 
     # Get detail type from heading
     detail_type = ws.cell(1, column).value
+
+    updating_passenger_spinner.stop()
 
     PRINT_GREEN(f"\n{detail_type.capitalize()} successfully updated for {name}.")
 
@@ -853,12 +897,15 @@ Current details:
         else:
             type_yes_no()
 
-    print(f"\nChecking in...")
+    print()
+    checking_in_spinner = SPINNER("Checking in...")
+    checking_in_spinner.start()
     
     # Update checked in cell value to True
     checked_in_column = ws.find("checked in").colchecked_in_column = ws.find("checked in").col
     ws.update_cell(row, checked_in_column, True)
 
+    checking_in_spinner.stop()
     PRINT_GREEN(f"\n{name} successfully checked in")
 
 
@@ -877,6 +924,8 @@ def add_luggage():
     # Lugagge = column 6
     current_luggage = int(flight_ws.cell(passenger_row, 6).value)
 
+    adding_luggage_spinner = SPINNER("Adding luggage to booking...")
+
     if current_luggage == 2:
         PRINT_GREEN(f"\nPassenger already has 2 pieces of luggage, which is the maximum.")
     
@@ -887,10 +936,11 @@ def add_luggage():
             add_luggage = input("Add 1 more? (yes/no): ").lower()
 
             if add_luggage == "yes":
-                print(f"\nAdding luggage to booking...")
+                adding_luggage_spinner.start()
 
                 flight_ws.update_cell(passenger_row, 6, 2)
-
+                
+                adding_luggage_spinner.stop()
                 PRINT_GREEN(f"\n1 piece of luggage successfully added.")
                 return
             elif add_luggage == "no":
@@ -909,10 +959,11 @@ def add_luggage():
                 PRINT_GREEN(f"\nBooking left at with no checked luggage.")
                 return
             elif more_luggage == "1" or more_luggage == "2":
-                print(f"\nAdding luggage to booking...")
+                adding_luggage_spinner.start()
 
                 flight_ws.update_cell(passenger_row, 6, more_luggage)
 
+                adding_luggage_spinner.stop()
                 PRINT_GREEN(f"\nLuggage successfully added.")
                 return
             else:
