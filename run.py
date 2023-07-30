@@ -859,7 +859,8 @@ def check_in():
         return
 
     # Check if passenger wants to update details before checking in
-    print(f"\nWarning: once checked in, passenger details can no longer be updated.")
+    PRINT_RED(f"\n" + u"\u2757" + " WARNING " + u"\u2757")
+    PRINT_RED("Once checked in, passenger details can no longer be updated.")
 
     first_names = ws.cell(row, 1).value
     last_name = ws.cell(row, 2).value
@@ -910,7 +911,7 @@ Current details:
     ws.update_cell(row, checked_in_column, True)
 
     checking_in_spinner.stop()
-    PRINT_GREEN(f"\n{name} successfully checked in")
+    PRINT_GREEN(f"{name} successfully checked in.")
 
 
 def add_luggage():
