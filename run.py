@@ -183,7 +183,6 @@ def view_all_flights():
             ticket_booking_program()
             return
         elif book_a_ticket == "no":
-            print(f"\nExiting flight viewing...")
             return
         else:
             type_yes_no()
@@ -1029,6 +1028,19 @@ def start_program():
 
     input("(Press enter) ")
 
+    welcome_message()
+
+
+def welcome_message():
+    """
+    On first main program run, print a welcome message
+    """
+    clear()
+
+    # Print welcome message letter by letter, then pause before displaying main menu
+    print_slow(f"\nWelcome to Magnolia Airport's passenger management portal.\n")
+    sleep(1)
+
     main()
 
 
@@ -1036,12 +1048,7 @@ def main():
     """
     Main program. Allow user to choose which function(s) to run.
     """
-    clear()
-
-    print_slow(f"\nWelcome to Magnolia Airport's passenger management portal.\n\n")
-    sleep(1)
-
-    print(f"Choose a program:\n")
+    print(f"\nChoose a program:\n")
 
     # Options menus
     control_options = [
@@ -1097,6 +1104,8 @@ def main():
                 PRINT_RED(f"No option ({control_choice}), please choose an option from the list above")
     
     input(f"\nHit enter to return to the main program\n")
+    
+    clear()
     main()
 
 
