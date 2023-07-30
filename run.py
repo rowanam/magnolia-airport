@@ -43,6 +43,9 @@ PRINT_GREEN = lambda x: cprint(x, "green")
 SPINNER = lambda x: Halo(text=x, spinner="earth")
 LOADING_SPINNER = Halo(text="Loading...", spinner="earth")
 
+# Add a symbol ("Question Symbol") in front of every user input request
+Q_S = "▹▹▹▹▸ "
+
 
 def clear():
     """
@@ -146,14 +149,14 @@ def view_all_flights():
     print(readable_flights_list)
 
     while True:
-        book_a_ticket = input("Would you like to make a booking? (yes/no) ")
+        book_a_ticket = input(f"{Q_S}Would you like to make a booking? (yes/no) ")
 
         if book_a_ticket == "yes":
             print("Taking you to ticket booking program...")
             ticket_booking_program()
             return
         elif book_a_ticket == "no":
-            print("Exiting flight viewing...")
+            print(f"\nExiting flight viewing...")
             return
         else:
             type_yes_no()
@@ -175,7 +178,7 @@ def view_all_passengers_of_flight():
     LOADING_SPINNER.stop()
 
     while True:
-        flight = input("Please input a flight number: ")
+        flight = input(f"{Q_S}Please input a flight number: ")
 
         try:
             if flight in flight_nos:
@@ -253,7 +256,7 @@ def book_ticket():
     # Ask for intended destination and check that there is a flight there
     while True:
         # Get user input for flight destination
-        destination = input("Select a destination: ").capitalize()
+        destination = input(f"{Q_S}Select a destination: ").capitalize()
 
         # If the desired destination not available, inform user of this and loop starts again
         # If the destination is available, loop breaks and function continues
@@ -267,7 +270,8 @@ Please try again.
         else:
             break
 
-    date_search_spinner = SPINNER(f"\nSearching for dates...")
+    print()
+    date_search_spinner = SPINNER("Searching for dates...")
     date_search_spinner.start()
 
     # Get all flights to chosen destination and number of flights
@@ -327,7 +331,7 @@ Please try again.
     while True:
         # Show flights information and ask for user input depending on number of flights
         print(f"\n{report_flight_info}")
-        continue_booking = input(f"\n{continue_booking_q}")
+        continue_booking = input(f"\n{Q_S}{continue_booking_q}")
 
         # Continue booking if there is an acceptable flight
         if continue_booking.lower() == "yes":
@@ -337,12 +341,12 @@ Please try again.
             # If multiple available flights, choose one then continue booking
             else:
                 while True:
-                    print(f"\nChoose a flight...")
+                    print(f"\nChoose a flight:")
 
                     for flight in flights_details:
                         print(f"   {flights_details.index(flight) + 1}) {flight['date']} at {flight['time']}")
 
-                    flight_option = input(f"\nType the number: ")
+                    flight_option = input(f"\n{Q_S}Type the number: ")
 
                     try:
                         flight_option_index = int(flight_option) - 1
@@ -358,7 +362,7 @@ Please try again.
         # or return to main menu
         elif continue_booking.lower() == "no":
             while True:
-                new_request = input(f"\nWould you like to book a different flight? (yes/no) ")
+                new_request = input(f"\n{Q_S}Would you like to book a different flight? (yes/no) ")
 
                 if new_request.lower() == "yes":
                     print()
@@ -418,6 +422,7 @@ Please try again.
     # Add booking number to passenger details
     passenger_details.append(booking_no)
 
+    print()
     adding_passenger_spinner = SPINNER("Adding passenger to flight...")
     adding_passenger_spinner.start()
 
@@ -431,7 +436,7 @@ Please try again.
 
     print(create_heading("Booking Confirmation"))
 
-    PRINT_GREEN(f"\nPassenger {passenger_details[0]} {passenger_details[1]} successfully added to flight {flight_number}")
+    PRINT_GREEN(f"Passenger {passenger_details[0]} {passenger_details[1]} successfully added to flight {flight_number}")
 
     # 's' suffix for 0 or 2 luggage pieces
     suffix = "s"
@@ -481,16 +486,16 @@ def get_passenger_detail(detail_type):
     while True:
         # Print appropriate question for each detail type
         if detail_type == "date of birth":
-            info = input(f"\nPlease enter {detail_type} (YYYY-MM-DD): ")
+            info = input(f"\n{Q_S}Please enter {detail_type} (YYYY-MM-DD): ")
         elif detail_type == "nationality":
             print(f"\nNationality:")
             print("   If input country name doesn't work, please try writing it")
             print("   a different way (e.g. for UK type United Kingdom).")
-            info = input(f"\nPlease enter {detail_type}: ")
+            info = input(f"\n{Q_S}Please enter {detail_type}: ")
         elif detail_type == "luggage":
-            info = input(f"\nHow many items of checked luggage would you like to book? (max. 2) ")
+            info = input(f"\n{Q_S}How many items of checked luggage would you like to book? (max. 2) ")
         else:
-            info = input(f"\nPlease enter {detail_type}: ")
+            info = input(f"\n{Q_S}Please enter {detail_type}: ")
         
         # Check that input data is valid
         validated_info = validate_passenger_detail(detail_type, info)
@@ -582,14 +587,14 @@ def find_booking():
         "row": None
     }
 
-    entered_last_name = input("Please enter last name: ")
+    entered_last_name = input(f"{Q_S}Please enter last name: ")
 
     # Get a list of all flight worksheets
     all_flight_worksheets = SHEET.worksheets()[2:]
 
     # Ask user for booking number and search for it in all flight worksheets
     while True:
-        booking_no = input("Please enter the booking number: ")
+        booking_no = input(f"{Q_S}Please enter the booking number: ")
 
         print()
         booking_searching_spinner = SPINNER(f"Searching for booking...")
@@ -626,7 +631,7 @@ def find_booking():
         # Return to where the function was called, passing either None or "main"
         # Original function will either call again or return to main() function
         while True:
-            choice = input("Press 1 to try again or 2 to return to main page: ")
+            choice = input(f"{Q_S}Press 1 to try again or 2 to return to main page: ")
 
             if choice == "1":
                 return
@@ -689,7 +694,7 @@ def view_passenger_details():
         PRINT_GREEN(f"Not yet checked in.\n")
 
         while True:
-            update_details = input("Update passenger details? (yes/no) ").lower()
+            update_details = input(f"{Q_S}Update passenger details? (yes/no) ").lower()
 
             if update_details == "yes":
                 update_passenger_details_program(ws, row, name)
@@ -722,12 +727,12 @@ def get_new_passenger_detail(ws, row, name):
 
     # Ask user to choose a detail type to be changed
     while True:
-        detail_type_to_update = input(f"\nWhat detail needs to be changed? ").strip()
+        detail_type_to_update = input(f"\n{Q_S}What detail needs to be changed? ").strip()
 
         if detail_type_to_update in detail_types:
             break
         elif detail_type_to_update == "none":
-            print("Exiting update details program...")
+            print(f"\nExiting update details program...")
             return
         else:
             print(f"\nDetail must be one of the following:")
@@ -748,7 +753,7 @@ def get_new_passenger_detail(ws, row, name):
 
     # See if user wants to change another detail
     while True:
-        another_detail = input("Change another passenger detail? (yes/no) ")
+        another_detail = input(f"{Q_S}Change another passenger detail? (yes/no) ")
 
         if another_detail == "yes":
             get_new_passenger_detail(ws, row, name)
@@ -836,7 +841,7 @@ def check_in():
 
     # Check that correct passenger has been retrieved
     while True:
-        correct_passenger = input(f"\nIs this correct? (yes/no) ").lower()
+        correct_passenger = input(f"\n{Q_S}Is this correct? (yes/no) ").lower()
 
         if correct_passenger == "yes":
             break
@@ -860,29 +865,28 @@ def check_in():
     last_name = ws.cell(row, 2).value
     name = f"{first_names} {last_name}"
     date_of_birth = ws.cell(row, 3).value
-    formatted_birth_date = format_flight_date(date_of_birth)
     passport_no = ws.cell(row, 4).value
     nationality = ws.cell(row, 5).value
     print(f"""
 Current details:
    {name}
-   Date of birth: {formatted_birth_date}
+   Date of birth: {date_of_birth}
    Passport no: {passport_no}
    Nationality: {nationality}
 """)
 
     while True:
-        change_details = input("Change any details before checking in? (yes/no) ").lower()
+        change_details = input(f"{Q_S}Change any details before checking in? (yes/no) ").lower()
 
         if change_details == "yes":
             update_passenger_details_program(ws, row, name)
 
             clear()
             print(create_heading("Finish Check In"))
-            print("Details successfully changed.")
+            PRINT_GREEN("Details successfully changed.")
 
             while True:
-                continue_check_in = input(f"\nProceed with check in? (yes/no) ").lower()
+                continue_check_in = input(f"\n{Q_S}Proceed with check in? (yes/no) ").lower()
 
                 if continue_check_in == "yes":
                     break
@@ -930,10 +934,10 @@ def add_luggage():
         PRINT_GREEN(f"\nPassenger already has 2 pieces of luggage, which is the maximum.")
     
     elif current_luggage == 1:
-        print(f"\nPassenger currently has 1 piece of lugagge.")
+        print(f"\nPassenger currently has 1 piece of lugagge.\n")
 
         while True:
-            add_luggage = input("Add 1 more? (yes/no): ").lower()
+            add_luggage = input(f"{Q_S}Add 1 more? (yes/no): ").lower()
 
             if add_luggage == "yes":
                 adding_luggage_spinner.start()
@@ -953,7 +957,7 @@ def add_luggage():
         print(f"\nPassenger currently has no checked luggage booked.")
 
         while True:
-            more_luggage = input(f"\nHow many pieces of luggage should be added? ")
+            more_luggage = input(f"\n{Q_S}How many pieces of luggage should be added? ")
 
             if more_luggage == "0" or more_luggage == "none":
                 PRINT_GREEN(f"\nBooking left at with no checked luggage.")
@@ -1014,7 +1018,7 @@ def main():
             print(f"   {num}) {option.capitalize()}")
 
     while True:
-        control_choice = input(f"\nType an option number here: ")
+        control_choice = input(f"\n{Q_S}Type an option number here: ")
 
         try:
             int(control_choice)
