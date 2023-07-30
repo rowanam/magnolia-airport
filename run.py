@@ -711,9 +711,10 @@ def view_passenger_details():
 
     formatted_passenger_info = readable_passenger_details(passenger)
     name = formatted_passenger_info["name"]
+    printable_passenger_info = formatted_passenger_info["readable_details"]
 
-    print(f"\nPassenger details:\n")
-    print(formatted_passenger_info["readable_details"])
+    print(f"Passenger details:\n")
+    print(printable_passenger_info)
 
     checked_in = see_if_checked_in(ws, row)
 
@@ -726,7 +727,7 @@ def view_passenger_details():
             update_details = input(f"{Q_S}Update passenger details? (yes/no) ").lower()
 
             if update_details == "yes":
-                update_passenger_details_program(ws, row, name)
+                update_passenger_details_program(ws, row, name, printable_passenger_info)
                 return
             elif update_details == "no":
                 print("Exiting passenger details program...")
@@ -735,7 +736,7 @@ def view_passenger_details():
                 type_yes_no()
 
 
-def update_passenger_details_program(ws, row, name):
+def update_passenger_details_program(ws, row, name, passenger_info):
     """
     Starts the program to update passenger details
     """
@@ -743,25 +744,25 @@ def update_passenger_details_program(ws, row, name):
     print(create_heading("Update Passenger Details"))
 
     # Ask the user what to change and update detail in ws
-    get_new_passenger_detail(ws, row, name)
+    get_new_passenger_detail(ws, row, name, passenger_info)
 
 
-def get_new_passenger_detail(ws, row, name):
+def get_new_passenger_detail(ws, row, name, passenger_info):
     """
     Change passenger details
     """
+    print(passenger_info)
 
     # Get list of all column heading detail types that can be updated (excludes booking no and checked in cells)
     detail_types = ws.row_values(1)[:6]
 
     # Ask user to choose a detail type to be changed
     while True:
-        detail_type_to_update = input(f"\n{Q_S}What detail needs to be changed? ").strip()
+        detail_type_to_update = input(f"{Q_S}What detail needs to be changed? ").lower().strip()
 
         if detail_type_to_update in detail_types:
             break
         elif detail_type_to_update == "none":
-            print(f"\nExiting update details program...")
             return
         else:
             print(f"\nDetail must be one of the following:")
@@ -785,7 +786,8 @@ def get_new_passenger_detail(ws, row, name):
         another_detail = input(f"{Q_S}Change another passenger detail? (yes/no) ")
 
         if another_detail == "yes":
-            get_new_passenger_detail(ws, row, name)
+            print()
+            get_new_passenger_detail(ws, row, name, passenger_info)
             return
         elif another_detail == "no":
             print("Exiting update details program...")
@@ -813,7 +815,7 @@ def update_passenger_detail_in_ws(ws, row, column, data, name):
 
     updating_passenger_spinner.stop()
 
-    PRINT_GREEN(f"\n{detail_type.capitalize()} successfully updated for {name}.")
+    PRINT_GREEN(f"{detail_type.capitalize()} successfully updated for {name}.")
 
     print(f"\nOriginal input: {original_value}")
     print(f"New value: {data}\n")
@@ -866,7 +868,7 @@ def check_in():
     last_name = ws.cell(row, last_name_column).value
     name = f"{first_name} {last_name}"
 
-    print(f"\nFor booking no. {booking_no} found passenger name: {name}")
+    print(f"For booking no. {booking_no} found passenger name: {name}")
 
     # Check that correct passenger has been retrieved
     while True:
@@ -891,25 +893,33 @@ def check_in():
     PRINT_RED(f"\n" + u"\u2757" + " WARNING " + u"\u2757")
     PRINT_RED("Once checked in, passenger details can no longer be updated.")
 
-    first_names = ws.cell(row, 1).value
-    last_name = ws.cell(row, 2).value
-    name = f"{first_names} {last_name}"
-    date_of_birth = ws.cell(row, 3).value
-    passport_no = ws.cell(row, 4).value
-    nationality = ws.cell(row, 5).value
+    # Get passenger details as dict
+    # Subtract 2 from row number because:
+    # - When retrieving ws data as dict, row 1 is used as keys, i.e. one less item in returned list
+    # - Rows start at 1, need to subtract a further unit for list indices starting at 0
+    passenger = ws.get_all_records()[row - 2]
+
+    # Convert passenger into printable format
+    formatted_passenger_info = readable_passenger_details(passenger)
+    name = formatted_passenger_info["name"]
+    printable_passenger_info = formatted_passenger_info["readable_details"]
+
+    # first_names = ws.cell(row, 1).value
+    # last_name = ws.cell(row, 2).value
+    # name = f"{first_names} {last_name}"
+    # date_of_birth = ws.cell(row, 3).value
+    # passport_no = ws.cell(row, 4).value
+    # nationality = ws.cell(row, 5).value
     print(f"""
 Current details:
-   {name}
-   Date of birth: {date_of_birth}
-   Passport no: {passport_no}
-   Nationality: {nationality}
+   {printable_passenger_info}
 """)
 
     while True:
         change_details = input(f"{Q_S}Change any details before checking in? (yes/no) ").lower()
 
         if change_details == "yes":
-            update_passenger_details_program(ws, row, name)
+            update_passenger_details_program(ws, row, name, printable_passenger_info)
 
             clear()
             print(create_heading("Finish Check In"))
