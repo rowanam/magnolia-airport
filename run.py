@@ -286,8 +286,8 @@ def get_all_passengers_of_flight(flight_number):
     provided number
     """
     print()
-    spinner = spinner("Retrieving passenger details...")
-    spinner.start()
+    passenger_details_spinner = spinner("Retrieving passenger details...")
+    passenger_details_spinner.start()
 
     worksheet_to_view = SHEET.worksheet(flight_number)
 
@@ -305,7 +305,7 @@ def get_all_passengers_of_flight(flight_number):
             details = readable_passenger_details(passenger)["readable_details"]
             passengers_display_string += f"{details}\n"
 
-    spinner.stop()
+    passenger_details_spinner.stop()
 
     return passengers_display_string
 
