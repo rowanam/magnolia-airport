@@ -23,6 +23,8 @@ Each program will ask one or more questions of the user, print data to the termi
 
 ## Features
 
+The program is designed to be run on a terminal of width 80 by height 24 rows.
+
 ### All programs - user input
 
 ADD PICTURE
@@ -282,7 +284,8 @@ Google Drive and Google Sheets APIs were used to link this project with a Sheets
 
 Setting up the API requires you to have a [Google account](https://accounts.google.com/signup). In your account, first create a spreadsheet with all of the worksheets you need for your project.
 
-### Creating a project, getting APIS set up and activating the API credentials
+<details>
+<summary>Creating a project, getting APIS set up and activating the API credentials</summary>
 
 - Open [Google Cloud Platform](https://console.cloud.google.com/)
 - Create a new project
@@ -306,8 +309,10 @@ Setting up the API requires you to have a [Google account](https://accounts.goog
 - Chooce the JSON key type, then click 'Create'
 - A credentials file will be downloaded to your computer - remember where it is located or move it to a folder of your choosing so you can find it later
 - Go back to the APIs library, search for and select 'Google Sheets API', then click 'Enable'
+</details>
 
-### Setting up the development environment and project to use the APIs
+<details>
+<summary>Setting up the development environment and project to use the APIs</summary>
 
 - Add the file with the API credentials, created in the steps above, to your project workspace (can name the file creds.json)
 - Add the file name to .gitignore so the project credentials are not pushed to GitHub (check it is not being tracked by seeing if it appears in the list of files staged for commit if you run the command 'git add .')
@@ -321,6 +326,7 @@ Setting up the API requires you to have a [Google account](https://accounts.goog
     - from google.oauth2.service_account import Credentials
 - Set the scope (see code in run.py)
 - Add the four lines of code defining constant variables in run.py under the SCOPE variable - these allow you to access the spreadsheet, which is now stored in the SHEET variable
+</details>
 
 ## Bugs
 
@@ -356,21 +362,75 @@ Extensive use testing was carried out to ensure that
 - data is validated correctly
 - data is added and changed correctly in spreadsheet
 
+Each function was run through several times, inputting different data types and responses to each question, and the worksheet was checked to ensure data is added properly. Each function was checked by accessing it from the main menu and also from other functions, where possible, to ensure the cross-linking works correctly.
+
 No bugs or uncaught errors were found in this process.
 
 ## Deployment
 
+This project is deployed to [Heroku](https://heroku.com/).
+
+--> Two steps necessary for deployment were completed before moving to Heroku: adding newline characters to inputs, and storing the project dependencies information.
+
 ### Input on new lines
 
-In the deployment environment on Heroku, input prompts require new lines after ward in order for text prompt to show. Therefore, newlines were added after each input request in the project.
+In the deployment environment on Heroku, input prompts require new lines after the prompt text in order for the prompt text to show. Therefore, newlines were added after each input request in the project.
 
-### Add project dependencies information
+### Adding project dependencies information
 
-Store list of all installed dependencies by running the command: 
+This step needs to be completed before deployment in order for the project to work correctly in the Heroku app.
+
+Store a list of all the installed dependencies by running the command: 
 
 pip3 freeze > requirements.txt
 
 This adds all of the project dependencies to the requirements.txt file, which can be read by Heroku to install the libraries and modules.
+
+--> After completing the two above steps, the project was deployed to Heroku.
+
+### Heroku account
+
+You need to create a [Heroku](https://heroku.com/) account in order to run apps on it.
+
+This project was deployed on a Heroku account that belongs to a student, and the usage of the platform was paid for by applying for the Heroku Student Pack.
+
+If you have access to the GitHub Student Developer Pack, to do the same, select the role 'Student' when signing up for an account. Then, make sure your [GitHub Student Developer Pack](https://education.github.com/pack) is active (click on the link for info about the pack). To apply for Heroku credits as a benefit of the pack, go to the 'Heroku fo GitHub Students' page ([link](https://www.heroku.com/github-students)) and complete the application for the offer.
+
+### Deploying the project on Heroku
+
+<details>
+<summary>Steps to deploy the project to Heroku</summary>
+
+- Go to your Heroku dashboard
+- Create a new app by clicking 'Create new app' or selecting this from the 'New' dropdown menu in the top right
+- Give the app a name, select a region, then click 'Create app'
+- On the app page, select the 'Settings' tab
+- In the Config Vars section, click 'Reveal Config Vars' to set up your config vars
+    - This project has credentials, which were added to the app as follows. Add the creds.json information from the project by first typing CREDS in the config var 'key' box. Then, open the project workspace, copy all of the contents of the creds.json file, and paste this into the 'value' box. Click 'Add' to add this config var
+    - Underneath, create another config var with key PORT and value 8000
+- Add two buildpacks to the app: python and nodejs (ensure these are in this order - the python buildpack should appear above nodejs in the list when both are added)
+- Select the 'Deploy' tab
+- This project used the GitHub deployment method:
+    - Select 'GitHub' under Deployment method
+    - Click 'Connect to GitHub'. You may be need to sign in to GitHub to allow access
+    - In the Connect to GitHub section, search for the project repository name, then click the 'Connect' button next to the repository
+    - Deploy the project automatically or manually by clicking the appropriate button
+- Once Heroku confirms that the app deployment has been successful, click 'View' to view the deployed project
+</details>
+
+### Activating eco dynos
+
+Dynos need to be activated in your account in order to run apps on Heroku. (Eco dynos are dynos that "go to sleep" automatically after a period of inactivity.) This only needs to be done for the entire account; you don't need to repeat this process for every new project.
+
+<details>
+<summary>Steps to activate eco dynos</summary>
+
+- Go to your Heroku dashboard
+- Navigate to 'Account settings' by clicking on your avatar icon
+- Go to the 'Billing' tab
+- Click 'Subscribe to Eco' in the Eco Dynos Plan section
+- Click the 'Subscribe' button to activate the dyno hours
+</details>
 
 ## Attributions
 
