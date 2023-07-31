@@ -158,7 +158,7 @@ def view_all_flights():
     for flight in all_flights:
         # Get a set of the keys to be removed
         all_keys = set(flight.keys())
-        desired_keys = {"flight no", "destination", "date", "departure time"}
+        desired_keys = {"flight no", "destination", "date", "departure time", "arrival time"}
         other_keys = all_keys - desired_keys
 
         for key in other_keys:
@@ -166,6 +166,12 @@ def view_all_flights():
 
         # Format flight date
         flight["date"] = format_flight_date(flight["date"], True)
+
+        # Rename departure and arrival time keys so they will fit in table heading
+        flight["departure"] = flight["departure time"]
+        flight["arrival"] = flight["arrival time"]
+        del flight["departure time"]
+        del flight["arrival time"]
 
     # Stop loading spinner
     finding_flights_spinner.stop()
