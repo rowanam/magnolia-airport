@@ -360,6 +360,10 @@ No bugs or uncaught errors were found in this process.
 
 ## Deployment
 
+### Input on new lines
+
+In the deployment environment on Heroku, input prompts require new lines after ward in order for text prompt to show. Therefore, newlines were added after each input request in the project.
+
 ## Attributions
 
 ### Magnolia start-up banner
