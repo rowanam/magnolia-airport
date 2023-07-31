@@ -57,7 +57,7 @@ def clear():
     """
     Clears terminal
     """
-    os.system("reset")
+    print("\033c")
 
 
 def print_slow(text):
