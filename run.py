@@ -323,12 +323,14 @@ def book_ticket():
         # Get user input for flight destination
         destination = input(f"{Q_S}Choose a destination:\n").title()
 
+        if destination == "Main":
+            return
         # If the desired destination not available, inform user of this and loop starts again
         # If the destination is available, loop breaks and function continues
-        if destination not in destinations_set:
+        elif destination not in destinations_set:
             PRINT_RED(f"No flights to {destination}.\n")
             print(readable_destinations_list)
-            PRINT_RED(f"\nPlease try again.\n")
+            PRINT_RED(f"\nPlease try again or type 'main' to return to the main program.\n")
         else:
             break
 
