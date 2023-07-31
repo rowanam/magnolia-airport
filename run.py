@@ -398,7 +398,6 @@ def book_ticket():
                     # it will end
                     return
                 elif new_request.lower() == "no":
-                    print(f"\nExiting ticket booking...")
                     return
                 else:
                     type_yes_no()
@@ -746,7 +745,6 @@ def view_passenger_details():
                 update_passenger_details_program(ws, row, name, printable_passenger_info)
                 return
             elif update_details == "no":
-                print("Exiting passenger details program...")
                 return
             else:
                 type_yes_no()
@@ -806,7 +804,6 @@ def get_new_passenger_detail(ws, row, name, passenger_info):
             get_new_passenger_detail(ws, row, name, passenger_info)
             return
         elif another_detail == "no":
-            print("Exiting update details program...")
             return
         else:
             type_yes_no()
@@ -933,7 +930,6 @@ Current details:
                 if continue_check_in == "yes":
                     break
                 elif continue_check_in == "no":
-                    print(f"\nExiting check in...")
                     return
                 else:
                     type_yes_no()
