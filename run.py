@@ -452,6 +452,8 @@ flight to be booked:\n")
                         flight_row = flight_rows[flight_option_index]
                     except ValueError:
                         print_red("Please type one of the numbers above.")
+                    except IndexError:
+                        print_red("Please type one of the numbers above.")
                     else:
                         break
 

@@ -364,6 +364,10 @@ Book ticket
 
 - Code was added to allow the user to return to the main menu if they don't want to book any of the available flights.
 
+### Uncaught IndexError in book ticket
+
+When multiple flights to a destination were found and the user was asked to enter the number of the flight to be booked, a ValueError exception was handled (e.g. user enters a word instead of a number), but if the user entered a number other than the ones presented, the program threw an uncaught IndexError (for a value outside the list range). The bug was fixed by adding another exception handling for the IndexError.
+
 ### Unfixed Bugs
 
 No unfixed bugs were found in the project.
