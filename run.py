@@ -429,6 +429,21 @@ def book_ticket():
     # Ask user questions to get passenger details
     passenger_details = get_all_passenger_details(get_details_message)
 
+    # Pause before final question
+    sleep(1)
+
+    # Check that passenger wants to book before completing
+    while True:
+        print("\n\nConfirm book ticket?")
+        get_ticket = input(f"\n{Q_S}Type 'yes' to continue or 'main' to exit ticket booking: ").lower()
+
+        if get_ticket == "yes":
+            break
+        elif get_ticket == "main":
+            return
+        else:
+            PRINT_RED(f"Please type 'yes' or 'main' only.\n")
+
     # Pull flight number from "flights" worksheet
     flight_number = FLIGHTS_WS.cell(flight_row, 1).value
 
