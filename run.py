@@ -835,7 +835,7 @@ def get_new_passenger_detail(ws, row, name, passenger_info):
 
         if detail_type_to_update in detail_types:
             break
-        elif detail_type_to_update == "none":
+        elif detail_type_to_update == "main":
             return
         else:
             print(f"\nDetail must be one of the following:")
@@ -843,9 +843,7 @@ def get_new_passenger_detail(ws, row, name, passenger_info):
             for detail in detail_types:
                 print(f"   - {detail}")
 
-            print(f"\nTo return to the main program, type 'none'")
-
-            PRINT_RED(f"\nPlease try again.\n")
+            PRINT_RED(f"\nPlease try again, or type 'main' to return to the main program.\n")
 
     # Get and validate user input for updated passenger data
     new_passenger_detail = get_passenger_detail(detail_type_to_update)
