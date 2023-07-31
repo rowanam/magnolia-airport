@@ -127,12 +127,14 @@ def create_heading(title):
 
 def format_flight_date(date_str, include_week_day):
     """
-    Pass a date string in format YYYY-MM-DD, returns in format e.g. Jun 23, 2023
+    Pass a date string in format YYYY-MM-DD, returns date in readable format
     """
     flight_date_object = datetime.strptime(date_str, '%Y-%m-%d').date()
 
+    # Formatted to include abbreviated week day, e.g. Fri, Jun 23, 2023
     if include_week_day:
         formatted_flight_date = flight_date_object.strftime("%a, %b %-d, %Y")
+    # Formatted without week day, e.g. Jun 23, 2023
     else:
         formatted_flight_date = flight_date_object.strftime("%b %-d, %Y")
 
@@ -202,18 +204,23 @@ def view_all_passengers_of_flight():
     clear()
     print(create_heading("View All Flight Passengers"))
 
+    # Start loading spinner
     LOADING_SPINNER.start()
 
+    # Get all flight nos
     flight_nos_column = get_flights_ws_column_no("flight no")
     flight_nos = FLIGHTS_WS.col_values(flight_nos_column)
 
+    # Stop loading spinner
     LOADING_SPINNER.stop()
 
+    # Get user input for desired flight to view passengers of
     while True:
         flight = input(f"{Q_S}Please input a flight number: ")
 
         try:
             if flight in flight_nos:
+                # Print each passenger as a formatted string
                 print(f"\n", get_all_passengers_of_flight(flight))
                 break
             else:
@@ -226,7 +233,6 @@ def get_all_passengers_of_flight(flight_number):
     """
     View all passengers and their details on the flight with the provided number
     """
-
     print()
     spinner = SPINNER("Retreiving passenger details...")
     spinner.start()
@@ -236,8 +242,10 @@ def get_all_passengers_of_flight(flight_number):
     # Get passenger info as a list of dictionaries
     passengers = worksheet_to_view.get_all_records()
 
+    # If no passengers on flight, state this in a message
     if len(passengers) == 0:
         passengers_display_string = f"No passengers on flight {flight_number}."
+    # Otherwise, create readable string of all passengers' details
     else:
         passengers_display_string = ""
 
@@ -474,7 +482,6 @@ def book_ticket():
         suffix = ""
 
     booking_confirmation_message = f"""
-
 ----------------------------------------
 BOOKING DETAILS
 
@@ -553,6 +560,7 @@ def validate_passenger_detail(detail_type, data):
         if detail_type == "first name(s)" or detail_type == "last name":
             formatted_info = data.title().strip()
 
+            # Check that names contain at least one letter
             contains_letter = False
             for i in formatted_info:
                 if i.isalpha():
@@ -560,6 +568,7 @@ def validate_passenger_detail(detail_type, data):
 
             if not contains_letter:
                 raise ValueError("name must contain at least one letter")
+            # Check that names only include allowed characters
             elif not all(ch.isalpha() or ch.isspace() or ch == "-" or ch == "'" for ch in formatted_info):
                 raise ValueError("name must consist of letters, spaces and '-' only")
 
@@ -592,6 +601,7 @@ def validate_passenger_detail(detail_type, data):
             if not (0 <= formatted_info <= 2):
                 raise ValueError("number of luggage items must be between 0 and 2")
         
+        # In case a new passenger detail type gets added in future, this will run before validation added
         else:
             print("Validation not yet available. Returning original value.")
             formatted_info = data
@@ -626,6 +636,7 @@ def find_booking():
     while True:
         booking_no = input(f"{Q_S}Please enter the booking number: ")
 
+        # Tell calling function to return to main program
         if booking_no == "main":
             return "main"
 
@@ -673,15 +684,18 @@ def find_booking():
             else:
                 PRINT_RED(f"Please type 1 or 2 only.\n")
 
+    # Add retrieved passenger information to dictionary to be returned
     details["flight_no"] = flight_no
     details["booking_no"] = booking_no
     details["row"] = row
 
+    # Get name details to print message
     booking_first_name = ws.cell(row, 1).value
     name = f"{booking_first_name} {booking_last_name}"
 
     booking_searching_spinner.stop()
 
+    # Inform user which passenger associated with booking
     print(f"For booking no. {booking_no} found passenger name: {name}")
 
     # Check that correct passenger has been retrieved
@@ -734,13 +748,17 @@ def view_passenger_details():
     name = formatted_passenger_info["name"]
     printable_passenger_info = formatted_passenger_info["readable_details"]
 
+    # Display passenger details
     print(f"\nPassenger details:\n")
     print(printable_passenger_info)
 
+    # See if passenger already checked in
     checked_in = see_if_checked_in(ws, row)
 
+    # If already checked in, details cannot be changed, and program ends
     if checked_in:
         PRINT_GREEN(f"{name} is already checked in. Passenger details can no longer be changed.\n")
+    # If not yet checked in, give option to change details
     else:
         PRINT_GREEN(f"Not yet checked in.\n")
 
@@ -920,16 +938,19 @@ Current details:
    {printable_passenger_info}
 """)
 
+    # Give user option to change passenger details before check in
     while True:
         change_details = input(f"{Q_S}Change any details before checking in? (yes/no) ").lower()
 
         if change_details == "yes":
             update_passenger_details_program(ws, row, name, printable_passenger_info)
 
+            # After details update, return to check in program
             clear()
             print(create_heading("Finish Check In"))
             PRINT_GREEN("Details successfully changed.")
 
+            # Ask if user wants to complete check in
             while True:
                 continue_check_in = input(f"\n{Q_S}Proceed with check in? (yes/no) ").lower()
 
@@ -986,9 +1007,11 @@ def add_luggage():
 
     adding_luggage_spinner = SPINNER("Adding luggage to booking...")
 
+    # If passenger already has 2 luggage pieces, can't add more
     if current_luggage == 2:
         PRINT_GREEN(f"\nPassenger already has 2 pieces of luggage, which is the maximum.")
     
+    # If passenger has 1 piece of luggage booked, give option to add another 1
     elif current_luggage == 1:
         print(f"\nPassenger currently has 1 piece of lugagge.\n")
 
@@ -998,6 +1021,7 @@ def add_luggage():
             if add_luggage == "yes":
                 adding_luggage_spinner.start()
 
+                # Update worksheet with 2 as data
                 flight_ws.update_cell(passenger_row, 6, 2)
                 
                 adding_luggage_spinner.stop()
@@ -1009,6 +1033,7 @@ def add_luggage():
             else:
                 type_yes_no()
     
+    # If passenger has no checked luggage booked, can add 1 or 2
     elif current_luggage == 0:
         print(f"\nPassenger currently has no checked luggage booked.")
 
@@ -1021,6 +1046,7 @@ def add_luggage():
             elif more_luggage == "1" or more_luggage == "2":
                 adding_luggage_spinner.start()
 
+                # Update worksheet with input amount of luggage
                 flight_ws.update_cell(passenger_row, 6, more_luggage)
 
                 adding_luggage_spinner.stop()
@@ -1134,6 +1160,8 @@ def main():
             else:
                 PRINT_RED(f"No option ({control_choice}), please choose an option from the list above")
     
+    # When a program is finished running, wait for user entry before clearing 
+    # terminal to allow details to be viewed
     input(f"\nHit enter to return to the main program\n")
     
     clear()
