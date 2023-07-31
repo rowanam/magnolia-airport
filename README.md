@@ -34,14 +34,16 @@ Throughout the program, a line of arrows is printed before prompts for user inpu
 
 For every question, the program checks if the input given is of a type that was expected. Questions will repeat until a valid option or input type is provided.
 
-### Start up banner
+### Start up and closing banner
 
 ADD PICTURE
 
-- start up banner
+- banner
 ![]()
 
 On program start up, the terminal displays a welcome banner and prompts the user to press enter to open the portal.
+
+When the program is exited, a goodbye message is printed, then the banner is displayed again.
 
 ### Main program
 
@@ -194,7 +196,7 @@ Then the user will hit enter to return to the main program.
 
 ### Check in
 
-The user will be prompted to enter a last name and booking number, which will be checked in the same way as described above in the ticket booking program.
+The user is prompted to enter a last name and booking number, which will be checked in the same way as described above in the ticket booking program.
 
 Once a booking is successfully found, the program will inform the user whether that passenger is already checked in.
 
@@ -246,7 +248,7 @@ ADD PICTURE
 
 ### Exit portal
 
-From the main menu, the user can exit the program by entering '100'.
+From the main menu, the user can exit the program by entering '100'. A goodbye message is displayed and then the opening banner.
 
 ADD PICTURE
 
@@ -258,13 +260,13 @@ ADD PICTURE
 - [Git](https://gist.github.com/derhuerst/1b15ff4652a867391f03) for version control
 - [GitHub](https://github.com/) to store project code
 - [GitPod](https://www.gitpod.io/) for coding the project
-- Heroku for project deployment
 - [PIP](https://pip.pypa.io/en/stable/installation/) to install tools
+- [Heroku](https://heroku.com/) for project deployment
 
 ### Imported modules/libraries
 
 - [gspread](https://docs.gspread.org/en/v5.10.0/) for manipulating Google Sheets spreadsheet
-- [google auth] * - add URL
+- [google auth](https://google-auth.readthedocs.io/en/master/) to access Google Drive and Sheets
 - [pycountry](https://pypi.org/project/pycountry/) to get a list of world countries
 - [termcolor](https://pypi.org/project/termcolor/) to print to the terminal in color
 - [halo](https://github.com/manrajgrover/halo) to add spinning icons during loading
@@ -277,6 +279,48 @@ ADD PICTURE
 ## Google API Setup
 
 Google Drive and Google Sheets APIs were used to link this project with a Sheets spreadsheet, allowing data to be read from the spreadsheet, manipulated and added.
+
+Setting up the API requires you to have a [Google account](https://accounts.google.com/signup). In your account, first create a spreadsheet with all of the worksheets you need for your project.
+
+### Creating a project, getting APIS set up and activating the API credentials
+
+- Open [Google Cloud Platform](https://console.cloud.google.com/)
+- Create a new project
+- Give the project a name and click 'create'
+- Click 'select project' to go to the project page
+- Select APIs & Services from the menu, then select 'Library'
+    - Two APIs from the library will be enabled: [Google Drive API](https://developers.google.com/drive/api/guides/about-sdk) and [Google Sheets API](https://developers.google.com/sheets/api/guides/concepts)
+- Search for the 'Google Drive API' and select it, then click 'enable'
+- On API overview page, click 'Create Credentials'
+- You will be asked to fill out a form to get the credentials:
+    - From the 'Which API are you using?' dropdown menu, choose 'Google Drive API'
+    - Under 'what data will you be accessing?', select 'Application data'
+    - For the question on whether you are planning to use the API with Compute Engine, Kubernetes, etc. - select 'No, I'm not using them'
+    - Click 'Next'
+    - Enter a service account name, then click 'Create'
+    - In the 'role' dropdown menu, choose 'Basic' then 'Editor', then press 'Continue'
+    - Then click 'Done' (the final options can be left blank)
+- Under Service Accounts, click on the address of the service account that has been created
+- Click on the Keys tab
+- Click 'Add Key' and then 'Create New Key'
+- Chooce the JSON key type, then click 'Create'
+- A credentials file will be downloaded to your computer - remember where it is located or move it to a folder of your choosing so you can find it later
+- Go back to the APIs library, search for and select 'Google Sheets API', then click 'Enable'
+
+### Setting up the development environment and project to use the APIs
+
+- Add the file with the API credentials, created in the steps above, to your project workspace (can name the file creds.json)
+- Add the file name to .gitignore so the project credentials are not pushed to GitHub (check it is not being tracked by seeing if it appears in the list of files staged for commit if you run the command 'git add .')
+- Copy the value of the 'client_email' key
+- Open the project spreadsheet, click 'Share', and paste in the client_email
+- Make sure 'editor' is selected and untick 'Notify people', then click 'Share'
+- In the development environment, two dependencies need to be installed to use the APIs:
+    - In the terminal, run the command: pip3 install gspread google-auth
+- Import the packages into the python (run.py) file - at the type of the file, add the following two lines:
+    - import gspread
+    - from google.oauth2.service_account import Credentials
+- Set the scope (see code in run.py)
+- Add the four lines of code defining constant variables in run.py under the SCOPE variable - these allow you to access the spreadsheet, which is now stored in the SHEET variable
 
 ## Bugs
 
@@ -300,7 +344,19 @@ The first and las names validation test was changed to required that the user in
 
 The find_booking function is set up to allow the user to try entering details again, or exit and return to the main menu if the booking cannot be found. It does this by returning the values None or 'main' to where the function was called. Two of the functions that called find_booking were set up to check for these returned values and so handled them correctly, but the add_luggage function, which also calls find_booking, did not have these checks set up and so if the user attempted to try again or exit to the main program the program threw an error. The issue was fixed by adding checks for None and 'main' return values after the function call in add_luggage.
 
+### Unfixed Bugs
+
+No unfixed bugs were found in the project.
+
 ## Testing
+
+Extensive use testing was carried out to ensure that 
+- all functions work correctly
+- functions link to each other and back home when appropriate
+- data is validated correctly
+- data is added and changed correctly in spreadsheet
+
+No bugs or uncaught errors were found in this process.
 
 ## Deployment
 
