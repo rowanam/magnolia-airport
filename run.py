@@ -1,3 +1,4 @@
+# To read and update Google Sheets spreadsheet
 import gspread
 from google.oauth2.service_account import Credentials
 
@@ -6,14 +7,18 @@ import string
 
 from datetime import datetime
 
+# To get a list of the world's countries
 from pycountry import countries
 
+# To print to the terminal in color
 from termcolor import colored, cprint
 
 import os
 
+# To display loading spinner icons
 from halo import Halo
 
+# To create tables of data
 from tabulate import tabulate
 
 # Modules for slow_print and creating time delay
@@ -41,16 +46,18 @@ FLIGHTS_WS = SHEET.worksheet("flights")
 # e.g. individual islands
 COUNTRIES = [country.name.upper() for country in countries]
 
-# Print in red or green to terminal, for error or success messages
-PRINT_RED = lambda x: cprint(x, "red")
-PRINT_GREEN = lambda x: cprint(x, "green")
-
-# Spinner for run time consuming code
-SPINNER = lambda x: Halo(text=x, spinner="earth")
-LOADING_SPINNER = Halo(text="Loading...", spinner="earth")
-
 # Add a symbol ("Question Symbol") in front of every user input request
 Q_S = "▹▹▹▹▸ "
+
+# Spinner for run time consuming code
+LOADING_SPINNER = Halo(text="Loading...", spinner="earth")
+
+
+def spinner(text):
+    """
+    Returns a spinner with passed text
+    """
+    return Halo(text=text, spinner="earth")
 
 
 def clear():
@@ -58,6 +65,20 @@ def clear():
     Clears terminal
     """
     print("\033c")
+
+
+def print_red(text):
+    """
+    Print to the terminal in red for error messages
+    """
+    cprint(text, "red")
+
+
+def print_green(text):
+    """
+    Print to the terminal in green for success messages
+    """
+    cprint(text, "green")
 
 
 def print_slow(text):
@@ -76,7 +97,7 @@ def type_yes_no():
     """
     Micro function to tell user to input 'yes' or 'no' only
     """
-    PRINT_RED(f"Please type 'yes' or 'no' only.\n")
+    print_red(f"Please type 'yes' or 'no' only.\n")
 
 
 def get_flights_ws_column_no(heading):
@@ -173,7 +194,7 @@ def display_all_flights():
     """
 
     # Start loading spinner
-    finding_flights_spinner = SPINNER("Retrieving flights...")
+    finding_flights_spinner = spinner("Retrieving flights...")
     finding_flights_spinner.start()
 
     # Get all flights info as a list of dicts
@@ -243,8 +264,8 @@ def view_all_passengers_of_flight():
             else:
                 raise ValueError("Invalid flight number")
         except ValueError as e:
-            PRINT_RED(f"{e}, please try again.\n")
-            PRINT_RED(f"Enter 'main' to return to the main program, or 'flights' to view all flights.\n")
+            print_red(f"{e}, please try again.\n")
+            print_red(f"Enter 'main' to return to the main program, or 'flights' to view all flights.\n")
 
 
 def get_all_passengers_of_flight(flight_number):
@@ -252,7 +273,7 @@ def get_all_passengers_of_flight(flight_number):
     View all passengers and their details on the flight with the provided number
     """
     print()
-    spinner = SPINNER("Retrieving passenger details...")
+    spinner = spinner("Retrieving passenger details...")
     spinner.start()
 
     worksheet_to_view = SHEET.worksheet(flight_number)
@@ -293,7 +314,7 @@ def book_ticket():
     and get passenger details.
     """
 
-    loading_destinations_spinner = SPINNER("Loading destinations...")
+    loading_destinations_spinner = spinner("Loading destinations...")
     loading_destinations_spinner.start()
 
     # From spreadsheet, pull all flight destinations
@@ -328,14 +349,14 @@ def book_ticket():
         # If the desired destination not available, inform user of this and loop starts again
         # If the destination is available, loop breaks and function continues
         elif destination not in destinations_set:
-            PRINT_RED(f"No flights to {destination}.\n")
+            print_red(f"No flights to {destination}.\n")
             print(readable_destinations_list)
-            PRINT_RED(f"\nPlease try again or type 'main' to return to the main program.\n")
+            print_red(f"\nPlease try again or type 'main' to return to the main program.\n")
         else:
             break
 
     print()
-    date_search_spinner = SPINNER("Searching for dates...")
+    date_search_spinner = spinner("Searching for dates...")
     date_search_spinner.start()
 
     # Get all flights to chosen destination and number of flights
@@ -411,7 +432,7 @@ def book_ticket():
                         flight_option_index = int(flight_option) - 1
                         flight_row = flight_rows[flight_option_index]
                     except:
-                        PRINT_RED("Please type one of the numbers above.")
+                        print_red("Please type one of the numbers above.")
                     else:
                         break
                 
@@ -462,7 +483,7 @@ def book_ticket():
         elif get_ticket == "main":
             return
         else:
-            PRINT_RED(f"Please type 'yes' or 'main' only.\n")
+            print_red(f"Please type 'yes' or 'main' only.\n")
 
     # Pull flight number from "flights" worksheet
     flight_number = FLIGHTS_WS.cell(flight_row, 1).value
@@ -496,7 +517,7 @@ def book_ticket():
     passenger_details.append(booking_no)
 
     print()
-    adding_passenger_spinner = SPINNER("Adding passenger to flight...")
+    adding_passenger_spinner = spinner("Adding passenger to flight...")
     adding_passenger_spinner.start()
 
     # Add the passenger details to a new row in the flight's worksheet
@@ -509,7 +530,7 @@ def book_ticket():
 
     print(create_heading("Booking Confirmation"))
 
-    PRINT_GREEN(f"Passenger {passenger_details[0]} {passenger_details[1]} successfully added to flight {flight_number}")
+    print_green(f"Passenger {passenger_details[0]} {passenger_details[1]} successfully added to flight {flight_number}")
 
     # 's' suffix for 0 or 2 luggage pieces
     suffix = "s"
@@ -642,7 +663,7 @@ def validate_passenger_detail(detail_type, data):
             formatted_info = data
 
     except ValueError as e:
-        PRINT_RED(f"Invalid data: {e}.\nPlease try again.")
+        print_red(f"Invalid data: {e}.\nPlease try again.")
     
     else:
         # If not errors, set validity to True and add formatted data to return value
@@ -676,7 +697,7 @@ def find_booking():
             return "main"
 
         print()
-        booking_searching_spinner = SPINNER(f"Searching for booking...")
+        booking_searching_spinner = spinner(f"Searching for booking...")
         booking_searching_spinner.start()
 
         flight_no = None
@@ -692,7 +713,7 @@ def find_booking():
             break
         else:
             booking_searching_spinner.stop()
-            PRINT_RED(f"Booking number not found. Please try again, or type 'main' to exit and return to the main program.\n")
+            print_red(f"Booking number not found. Please try again, or type 'main' to exit and return to the main program.\n")
 
     ws = SHEET.worksheet(flight_no)
 
@@ -704,7 +725,7 @@ def find_booking():
     if entered_last_name != booking_last_name:
         booking_searching_spinner.stop()
 
-        PRINT_RED(f"Last name does not match booking.\n")
+        print_red(f"Last name does not match booking.\n")
 
         # Return to where the function was called, passing either None or "main"
         # Original function will either call again or return to main() function
@@ -717,7 +738,7 @@ def find_booking():
             elif choice == "2":
                 return "main"
             else:
-                PRINT_RED(f"Please type 1 or 2 only.\n")
+                print_red(f"Please type 1 or 2 only.\n")
 
     # Add retrieved passenger information to dictionary to be returned
     details["flight_no"] = flight_no
@@ -792,10 +813,10 @@ def view_passenger_details():
 
     # If already checked in, details cannot be changed, and program ends
     if checked_in:
-        PRINT_GREEN(f"{name} is already checked in. Passenger details can no longer be changed.\n")
+        print_green(f"{name} is already checked in. Passenger details can no longer be changed.\n")
     # If not yet checked in, give option to change details
     else:
-        PRINT_GREEN(f"Not yet checked in.\n")
+        print_green(f"Not yet checked in.\n")
 
         while True:
             update_details = input(f"{Q_S}Update passenger details? (yes/no)\n").lower()
@@ -843,7 +864,7 @@ def get_new_passenger_detail(ws, row, name, passenger_info):
             for detail in detail_types:
                 print(f"   - {detail}")
 
-            PRINT_RED(f"\nPlease try again, or type 'main' to return to the main program.\n")
+            print_red(f"\nPlease try again, or type 'main' to return to the main program.\n")
 
     # Get and validate user input for updated passenger data
     new_passenger_detail = get_passenger_detail(detail_type_to_update)
@@ -871,7 +892,7 @@ def update_passenger_detail_in_ws(ws, row, column, data, name):
     Update a passenger's booking detail in flight ws
     """
     print()
-    updating_passenger_spinner = SPINNER("Updating passenger data...")
+    updating_passenger_spinner = spinner("Updating passenger data...")
     updating_passenger_spinner.start()
 
     # Get the original value to show user the change
@@ -885,7 +906,7 @@ def update_passenger_detail_in_ws(ws, row, column, data, name):
 
     updating_passenger_spinner.stop()
 
-    PRINT_GREEN(f"{detail_type.capitalize()} successfully updated for {name}.")
+    print_green(f"{detail_type.capitalize()} successfully updated for {name}.")
 
     print(f"\nOriginal input: {original_value}")
     print(f"New value: {data}\n")
@@ -942,12 +963,12 @@ def check_in():
     checked_in = see_if_checked_in(ws, row)
 
     if checked_in:
-        PRINT_GREEN(f"\n{name} is already checked in.")
+        print_green(f"\n{name} is already checked in.")
         return
 
     # Check if passenger wants to update details before checking in
-    PRINT_RED(f"\n" + u"\u2757" + " WARNING " + u"\u2757")
-    PRINT_RED("Once checked in, passenger details can no longer be updated.")
+    print_red(f"\n" + u"\u2757" + " WARNING " + u"\u2757")
+    print_red("Once checked in, passenger details can no longer be updated.")
 
     # Get passenger details as dict
     # Subtract 2 from row number because:
@@ -981,7 +1002,7 @@ Current details:
             # After details update, return to check in program
             clear()
             print(create_heading("Finish Check In"))
-            PRINT_GREEN("Details successfully changed.")
+            print_green("Details successfully changed.")
 
             # Ask if user wants to complete check in
             while True:
@@ -1000,7 +1021,7 @@ Current details:
             type_yes_no()
 
     print()
-    checking_in_spinner = SPINNER("Checking in...")
+    checking_in_spinner = spinner("Checking in...")
     checking_in_spinner.start()
     
     # Update checked in cell value to True
@@ -1008,7 +1029,7 @@ Current details:
     ws.update_cell(row, checked_in_column, True)
 
     checking_in_spinner.stop()
-    PRINT_GREEN(f"{name} successfully checked in.")
+    print_green(f"{name} successfully checked in.")
 
 
 def add_luggage():
@@ -1039,11 +1060,11 @@ def add_luggage():
     current_luggage = int(flight_ws.cell(passenger_row, 6).value)
 
     print()
-    adding_luggage_spinner = SPINNER("Adding luggage to booking...")
+    adding_luggage_spinner = spinner("Adding luggage to booking...")
 
     # If passenger already has 2 luggage pieces, can't add more
     if current_luggage == 2:
-        PRINT_GREEN(f"Passenger already has 2 pieces of luggage, which is the maximum.")
+        print_green(f"Passenger already has 2 pieces of luggage, which is the maximum.")
     
     # If passenger has 1 piece of luggage booked, give option to add another 1
     elif current_luggage == 1:
@@ -1060,10 +1081,10 @@ def add_luggage():
                 flight_ws.update_cell(passenger_row, 6, 2)
                 
                 adding_luggage_spinner.stop()
-                PRINT_GREEN(f"1 piece of luggage successfully added.")
+                print_green(f"1 piece of luggage successfully added.")
                 return
             elif add_luggage == "no":
-                PRINT_GREEN(f"\nBooking left at 1 piece of luggage.")
+                print_green(f"\nBooking left at 1 piece of luggage.")
                 return
             else:
                 type_yes_no()
@@ -1076,7 +1097,7 @@ def add_luggage():
             more_luggage = input(f"\n{Q_S}How many pieces of luggage should be added?\n")
 
             if more_luggage == "0" or more_luggage == "none":
-                PRINT_GREEN(f"\nBooking left at with no checked luggage.")
+                print_green(f"\nBooking left at with no checked luggage.")
                 return
             elif more_luggage == "1" or more_luggage == "2":
                 print()
@@ -1086,7 +1107,7 @@ def add_luggage():
                 flight_ws.update_cell(passenger_row, 6, more_luggage)
 
                 adding_luggage_spinner.stop()
-                PRINT_GREEN(f"Luggage successfully added.")
+                print_green(f"Luggage successfully added.")
                 return
             else:
                 type_yes_no()
@@ -1155,7 +1176,7 @@ def main():
         try:
             int(control_choice)
         except ValueError:
-            PRINT_RED("Please input a number")
+            print_red("Please input a number")
         else:
             control_choice = int(control_choice)
 
@@ -1194,7 +1215,7 @@ def main():
                 # End the program
                 exit()
             else:
-                PRINT_RED(f"No option ({control_choice}), please choose an option from the list above")
+                print_red(f"No option ({control_choice}), please choose an option from the list above")
     
     # When a program is finished running, wait for user entry before clearing 
     # terminal to allow details to be viewed
