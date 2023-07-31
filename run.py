@@ -184,7 +184,7 @@ def view_all_flights():
     # Ask if user would like to make a booking, then either call ticket booking
     # or return to main program
     while True:
-        book_a_ticket = input(f"\n{Q_S}Would you like to make a booking? (yes/no) ")
+        book_a_ticket = input(f"\n{Q_S}Would you like to make a booking? (yes/no) ").lower()
 
         if book_a_ticket == "yes":
             print("Taking you to ticket booking program...")
@@ -354,7 +354,7 @@ def book_ticket():
         date = flight_details["date"]
 
         report_flight_info = f"We have a flight to {destination} on {date} at {time}."
-        continue_booking_q = "Is that ok? (yes/no): "
+        continue_booking_q = "Is that ok? (yes/no) "
     else:
         flight_rows = [flight.row for flight in flights_to_destination]
         flights_details = [get_date_and_time(row) for row in flight_rows]
@@ -364,7 +364,7 @@ def book_ticket():
         for flight in flights_details:
             report_flight_info += f"\n   {flights_details.index(flight) + 1}) {flight['date']} at {flight['time']}"
 
-        continue_booking_q = "Is one of those ok? (yes/no): "
+        continue_booking_q = "Is one of those ok? (yes/no) "
 
     date_search_spinner.stop()
 
@@ -375,7 +375,7 @@ def book_ticket():
     while True:
         # Show flights information and ask for user input depending on number of flights
         print(f"\n{report_flight_info}")
-        continue_booking = input(f"\n{Q_S}{continue_booking_q}")
+        continue_booking = input(f"\n{Q_S}{continue_booking_q}").lower()
 
         # Continue booking if there is an acceptable flight
         if continue_booking.lower() == "yes":
@@ -401,7 +401,7 @@ def book_ticket():
         # or return to main menu
         elif continue_booking.lower() == "no":
             while True:
-                new_request = input(f"\n{Q_S}Would you like to book a different flight? (yes/no) ")
+                new_request = input(f"\n{Q_S}Would you like to book a different flight? (yes/no) ").lower()
 
                 if new_request.lower() == "yes":
                     print()
@@ -821,7 +821,7 @@ def get_new_passenger_detail(ws, row, name, passenger_info):
 
     # See if user wants to change another detail
     while True:
-        another_detail = input(f"{Q_S}Change another passenger detail? (yes/no) ")
+        another_detail = input(f"{Q_S}Change another passenger detail? (yes/no) ").lower()
 
         if another_detail == "yes":
             print()
