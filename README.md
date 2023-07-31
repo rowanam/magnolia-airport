@@ -350,6 +350,10 @@ The first and las names validation test was changed to required that the user in
 
 The find_booking function is set up to allow the user to try entering details again, or exit and return to the main menu if the booking cannot be found. It does this by returning the values None or 'main' to where the function was called. Two of the functions that called find_booking were set up to check for these returned values and so handled them correctly, but the add_luggage function, which also calls find_booking, did not have these checks set up and so if the user attempted to try again or exit to the main program the program threw an error. The issue was fixed by adding checks for None and 'main' return values after the function call in add_luggage.
 
+### View all passengers for a flight - input options
+
+Code was added to give the user the option to either return to the main program or view all flights. This way, the user does not get stuck in the program if no flight number is known.
+
 ### Unfixed Bugs
 
 No unfixed bugs were found in the project.

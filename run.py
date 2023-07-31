@@ -143,10 +143,34 @@ def format_flight_date(date_str, include_week_day):
 
 def view_all_flights():
     """
-    Gets all available flights and returns as a readable string
+    Gets all available flights and returns as a readable string, 
+    then asks if user would like to book a ticket
     """
     clear()
     print(create_heading("View Flights"))
+
+    # Print a table of all flights
+    print(display_all_flights())
+    
+    # Ask if user would like to make a booking, then either call ticket booking
+    # or return to main program
+    while True:
+        book_a_ticket = input(f"\n{Q_S}Would you like to make a booking? (yes/no)\n").lower()
+
+        if book_a_ticket == "yes":
+            print("Taking you to ticket booking program...")
+            ticket_booking_program()
+            return
+        elif book_a_ticket == "no":
+            return
+        else:
+            type_yes_no()
+
+
+def display_all_flights():
+    """
+    Creates a returns a table with information on all available flights
+    """
 
     # Start loading spinner
     finding_flights_spinner = SPINNER("Retrieving flights...")
@@ -178,22 +202,10 @@ def view_all_flights():
     # Stop loading spinner
     finding_flights_spinner.stop()
 
-    # Print table of flights
-    print(tabulate(all_flights, headers="keys", tablefmt="fancy_grid"))
-    
-    # Ask if user would like to make a booking, then either call ticket booking
-    # or return to main program
-    while True:
-        book_a_ticket = input(f"\n{Q_S}Would you like to make a booking? (yes/no)\n").lower()
+    # Create a table of all flights
+    flights_table = tabulate(all_flights, headers="keys", tablefmt="fancy_grid")
 
-        if book_a_ticket == "yes":
-            print("Taking you to ticket booking program...")
-            ticket_booking_program()
-            return
-        elif book_a_ticket == "no":
-            return
-        else:
-            type_yes_no()
+    return flights_table
 
 
 def view_all_passengers_of_flight():
@@ -219,14 +231,20 @@ def view_all_passengers_of_flight():
         flight = input(f"{Q_S}Please input a flight number:\n")
 
         try:
-            if flight in flight_nos:
+            if flight == "main":
+                return
+            elif flight == "flights":
+                print()
+                print(display_all_flights())
+            elif flight in flight_nos:
                 # Print each passenger as a formatted string
                 print(f"\n", get_all_passengers_of_flight(flight))
                 break
             else:
                 raise ValueError("Invalid flight number")
         except ValueError as e:
-            PRINT_RED(f"{e}, please try again\n")
+            PRINT_RED(f"{e}, please try again.\n")
+            PRINT_RED(f"Enter 'main' to return to the main program, or 'flights' to view all flights.\n")
 
 
 def get_all_passengers_of_flight(flight_number):
