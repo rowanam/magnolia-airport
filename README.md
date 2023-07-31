@@ -364,6 +364,14 @@ No bugs or uncaught errors were found in this process.
 
 In the deployment environment on Heroku, input prompts require new lines after ward in order for text prompt to show. Therefore, newlines were added after each input request in the project.
 
+### Add project dependencies information
+
+Store list of all installed dependencies by running the command: 
+
+pip3 freeze > requirements.txt
+
+This adds all of the project dependencies to the requirements.txt file, which can be read by Heroku to install the libraries and modules.
+
 ## Attributions
 
 ### Magnolia start-up banner
