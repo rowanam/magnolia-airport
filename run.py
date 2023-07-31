@@ -645,10 +645,9 @@ def find_booking():
 
     ws = SHEET.worksheet(flight_no)
 
-    # Get the last name entered in the booking
-    last_name_column = ws.find("last name").col
+    # Get the last name entered in the booking (last name in column 2)
     row = ws.find(booking_no).row
-    booking_last_name = ws.cell(row, last_name_column).value
+    booking_last_name = ws.cell(row, 2).value
 
     # Check if last name input matches last name in booking
     if entered_last_name != booking_last_name:
@@ -673,7 +672,24 @@ def find_booking():
     details["booking_no"] = booking_no
     details["row"] = row
 
+    booking_first_name = ws.cell(row, 1).value
+    name = f"{booking_first_name} {booking_last_name}"
+
     booking_searching_spinner.stop()
+
+    print(f"For booking no. {booking_no} found passenger name: {name}")
+
+    # Check that correct passenger has been retrieved
+    while True:
+        correct_passenger = input(f"\n{Q_S}Is this correct? (yes/no) ").lower()
+
+        if correct_passenger == "yes":
+            break
+        elif correct_passenger == "no":
+            # If incorrect passenger, tell function to end and return to home
+            return "main"
+        else:
+            type_yes_no()
 
     return details
 
@@ -713,7 +729,7 @@ def view_passenger_details():
     name = formatted_passenger_info["name"]
     printable_passenger_info = formatted_passenger_info["readable_details"]
 
-    print(f"Passenger details:\n")
+    print(f"\nPassenger details:\n")
     print(printable_passenger_info)
 
     checked_in = see_if_checked_in(ws, row)
@@ -867,20 +883,6 @@ def check_in():
     first_name = ws.cell(row, first_name_column).value
     last_name = ws.cell(row, last_name_column).value
     name = f"{first_name} {last_name}"
-
-    print(f"For booking no. {booking_no} found passenger name: {name}")
-
-    # Check that correct passenger has been retrieved
-    while True:
-        correct_passenger = input(f"\n{Q_S}Is this correct? (yes/no) ").lower()
-
-        if correct_passenger == "yes":
-            break
-        elif correct_passenger == "no":
-            print("Returning to home...")
-            return
-        else:
-            type_yes_no()
 
     # See if passenger is already checked in
     checked_in = see_if_checked_in(ws, row)
