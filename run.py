@@ -555,7 +555,7 @@ def validate_passenger_detail(detail_type, data):
 
             if not contains_letter:
                 raise ValueError("name must contain at least one letter")
-            elif not all(ch.isalpha() or ch.isspace() or ch == "-" for ch in formatted_info):
+            elif not all(ch.isalpha() or ch.isspace() or ch == "-" or ch == "'" for ch in formatted_info):
                 raise ValueError("name must consist of letters, spaces and '-' only")
 
         elif detail_type == "date of birth":
