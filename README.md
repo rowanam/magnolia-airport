@@ -459,3 +459,7 @@ Image by <a href="https://www.freepik.com/free-vector/hand-drawn-simple-flower-o
 ### Slow print function
 
 Slow print function taken from this <a href="https://stackoverflow.com/questions/4099422/printing-slowly-simulate-typing">stackoverflow post.</a>
+
+### Other credit
+
+- Code Institute for the deployment terminal
