@@ -57,7 +57,7 @@ def clear():
     """
     Clears terminal
     """
-    os.system("clear")
+    os.system("reset")
 
 
 def print_slow(text):
