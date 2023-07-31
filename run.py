@@ -1116,7 +1116,20 @@ def main():
                 add_luggage()
                 break
             elif control_choice == 100:
-                print(f"\nGoodbye, have a nice day.")
+                # Show a goodbye message, pause, then clear terminal
+                clear()
+                print_slow(f"\nGoodbye, have a nice day!")
+                sleep(1)
+                clear()
+
+                with open("banner.txt") as f:
+                    banner = f.read()
+
+                # Print the airport banner
+                colored_banner = colored(banner, "black", "on_light_cyan")
+                print(colored_banner)
+
+                # End the program
                 exit()
             else:
                 PRINT_RED(f"No option ({control_choice}), please choose an option from the list above")
