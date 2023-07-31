@@ -234,7 +234,7 @@ def get_all_passengers_of_flight(flight_number):
     View all passengers and their details on the flight with the provided number
     """
     print()
-    spinner = SPINNER("Retreiving passenger details...")
+    spinner = SPINNER("Retrieving passenger details...")
     spinner.start()
 
     worksheet_to_view = SHEET.worksheet(flight_number)
@@ -303,7 +303,7 @@ def book_ticket():
     # Ask for intended destination and check that there is a flight there
     while True:
         # Get user input for flight destination
-        destination = input(f"{Q_S}Select a destination: ").capitalize()
+        destination = input(f"{Q_S}Select a destination: ").title()
 
         # If the desired destination not available, inform user of this and loop starts again
         # If the destination is available, loop breaks and function continues
@@ -374,7 +374,7 @@ def book_ticket():
     # If no acceptable flights, function stops and code returns to main program
     while True:
         # Show flights information and ask for user input depending on number of flights
-        print(f"\n{report_flight_info}")
+        print(f"{report_flight_info}")
         continue_booking = input(f"\n{Q_S}{continue_booking_q}").lower()
 
         # Continue booking if there is an acceptable flight
@@ -570,7 +570,7 @@ def validate_passenger_detail(detail_type, data):
                 raise ValueError("name must contain at least one letter")
             # Check that names only include allowed characters
             elif not all(ch.isalpha() or ch.isspace() or ch == "-" or ch == "'" for ch in formatted_info):
-                raise ValueError("name must consist of letters, spaces and '-' only")
+                raise ValueError("name must consist of letters, spaces, apostrophes (') or dashes (-) only")
 
         elif detail_type == "date of birth":
             # Check that the input can be parsed to a datetime object
@@ -1005,27 +1005,29 @@ def add_luggage():
     # Lugagge = column 6
     current_luggage = int(flight_ws.cell(passenger_row, 6).value)
 
+    print()
     adding_luggage_spinner = SPINNER("Adding luggage to booking...")
 
     # If passenger already has 2 luggage pieces, can't add more
     if current_luggage == 2:
-        PRINT_GREEN(f"\nPassenger already has 2 pieces of luggage, which is the maximum.")
+        PRINT_GREEN(f"Passenger already has 2 pieces of luggage, which is the maximum.")
     
     # If passenger has 1 piece of luggage booked, give option to add another 1
     elif current_luggage == 1:
-        print(f"\nPassenger currently has 1 piece of lugagge.\n")
+        print(f"Passenger currently has 1 piece of lugagge.\n")
 
         while True:
             add_luggage = input(f"{Q_S}Add 1 more? (yes/no): ").lower()
 
             if add_luggage == "yes":
+                print()
                 adding_luggage_spinner.start()
 
                 # Update worksheet with 2 as data
                 flight_ws.update_cell(passenger_row, 6, 2)
                 
                 adding_luggage_spinner.stop()
-                PRINT_GREEN(f"\n1 piece of luggage successfully added.")
+                PRINT_GREEN(f"1 piece of luggage successfully added.")
                 return
             elif add_luggage == "no":
                 PRINT_GREEN(f"\nBooking left at 1 piece of luggage.")
@@ -1035,7 +1037,7 @@ def add_luggage():
     
     # If passenger has no checked luggage booked, can add 1 or 2
     elif current_luggage == 0:
-        print(f"\nPassenger currently has no checked luggage booked.")
+        print(f"Currently no checked luggage booked.")
 
         while True:
             more_luggage = input(f"\n{Q_S}How many pieces of luggage should be added? ")
@@ -1044,13 +1046,14 @@ def add_luggage():
                 PRINT_GREEN(f"\nBooking left at with no checked luggage.")
                 return
             elif more_luggage == "1" or more_luggage == "2":
+                print()
                 adding_luggage_spinner.start()
 
                 # Update worksheet with input amount of luggage
                 flight_ws.update_cell(passenger_row, 6, more_luggage)
 
                 adding_luggage_spinner.stop()
-                PRINT_GREEN(f"\nLuggage successfully added.")
+                PRINT_GREEN(f"Luggage successfully added.")
                 return
             else:
                 type_yes_no()
