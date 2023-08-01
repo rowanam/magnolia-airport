@@ -2,12 +2,22 @@
 
 This program provides a simple command-line interface portal for a small regional airport somewhere in the southern United States. Flight details and booked passenger data is stored in a Google Sheets spreadsheet and the portal provides programs to view information, make bookings, change details and check in.
 
-View the deployed program here - [link]() (not yet live)
+View the deployed program here - [https://magnolia-airport-378c1ec95a94.herokuapp.com/]() (not yet live)
 
 ADD PICTURE
 
 - program
 ![]()
+
+## Project Goals
+
+This project is intended to be a frictionless airport terminal for a small airport. Major passenger management functions, namely booking tichets, updating passenger details, checking in and adding baggage are available, as well as information programs that allow users to get an overview of the current situation, specicially information about all flights and passenger lists for each flight.
+
+The main program allows access to all of these sub programs, which are also cross linked to each other and allow exit back to the main program at various points, in order to provide a smooth user experience without the need to restart the application in order to access each function.
+
+In addition, navigational user responses and data entry is validated throught, to ensure both that all data entered is of the approriate types, and that mistakes and when making program flow decisions can be handled without crashing or needing to restart the program. Error and confirmation messages support this by showing when mistakes were made and when information has been processed correctly.
+
+The program overall should be readable, clearly indicate where user input is needed and explain what needs to be changed after wrong data entry, allow easy navigation and use of passenger management functions, and most importantly allow passenger data to be correctly accessed and manipulated.
 
 ## User Experience
 
@@ -20,6 +30,14 @@ However, the program should be intuitive and easy to use, and allow frictionless
 The portal opens with a menu of options, which the user can select to start different programs (book a ticket, check in, etc.).
 
 Each program will ask one or more questions of the user, print data to the terminal, and provide options to complete certain tasks or return to the main program.
+
+## Project design and planning
+
+The program is essentially composed of a central main program with a menu of options, and six major sub programs that handle various passenger management tasks. Each of these access other smaller functions throughout the program and link to each other or back to the main menu.
+
+The flowchart below illustrates the core structure and major processing and decision steps in the program (created using [draw.io](https://app.diagrams.net/)).
+
+![project flowchart](documentation/images/flowchart.png)
 
 ## Features
 
@@ -464,6 +482,7 @@ Image by <a href="https://www.freepik.com/free-vector/hand-drawn-simple-flower-o
 
 Slow print function taken from this <a href="https://stackoverflow.com/questions/4099422/printing-slowly-simulate-typing">stackoverflow post.</a>
 
-### Other credit
+### Other credits
 
+- The flowchart in this README document was created using [draw.io](https://app.diagrams.net/)
 - Code Institute for the deployment terminal
