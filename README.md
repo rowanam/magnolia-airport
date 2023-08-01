@@ -2,12 +2,9 @@
 
 This program provides a simple command-line interface portal for a small regional airport somewhere in the southern United States. Flight details and booked passenger data is stored in a Google Sheets spreadsheet and the portal provides programs to view information, make bookings, change details and check in.
 
-View the deployed program here - [https://magnolia-airport-378c1ec95a94.herokuapp.com/]() (not yet live)
+View the deployed program here - [deployed project link](https://magnolia-airport-378c1ec95a94.herokuapp.com/)
 
-ADD PICTURE
-
-- program
-![]()
+![deployed project on various screen sizes](documentation/images/app_different_screens.png)
 
 ## Project Goals
 
@@ -47,41 +44,29 @@ The program is designed to be run on a terminal of width 80 by height 24 rows.
 
 At input requests throughout the program, the user is given options to exit and return to the main program, or move to another program, where appropriate.
 
-ADD PICTURE
-
-- question
-![]()
-
 Throughout the program, a line of arrows is printed before prompts for user input as a visual signal to differentiate questions from printed lines of information. The same symbol is used throughout for consistency.
+
+![input question showing triangle symbols](documentation/images/input_question.png)
 
 For every question, the program checks if the input given is of a type that was expected. Questions will repeat until a valid option or input type is provided.
 
-### Start up and closing banner
+### Start up banner
 
-ADD PICTURE
-
-- banner
-![]()
+![start up banner](documentation/images/banner.png)
 
 On program start up, the terminal displays a welcome banner and prompts the user to press enter to open the portal.
 
-When the program is exited, a goodbye message is printed, then the banner is displayed again.
-
 ### Main program
 
-ADD PICTURE
-
-- main menu
-![]()
+![main program with sub program options](documentation/images/main_menu.png)
 
 When the main program runs, a welcome message is printed onto the screen. Then a menu of program options is displayed and the user is prompted to select one.
 
 ### View all flights
 
-ADD PICTURE
+![view all flights program](documentation/images/all_flights_1.png)
 
-- view all flights
-![]()
+![view all flights program](documentation/images/all_flights_2.png)
 
 A table of all of the available flights is printed to the terminal, with relevant details for a person looking to book a flight.
 
@@ -91,19 +76,15 @@ The user is then asked if they want to book a ticket.
 
 ### View all passengers for a flight
 
-ADD PICTURE
+![view all passengers for a flight](documentation/images/view_all_passengers_1.png)
 
-- view all passengers for a flight
-![]()
+![view all passengers for a flight](documentation/images/view_all_passengers_2.png)
 
 The user is asked to input a flight number, then details are printed for each passenger on the selected flight.
 
 ### Book ticket
 
-ADD PICTURE
-
-- book ticket
-![]()
+![ticket booking program](documentation/images/ticket_booking.png)
 
 A list of available destinations is printed to the screen and the user is prompted to choose one. If they respond with a location not on the list, the list and prompt will appear again.
 
@@ -111,14 +92,11 @@ Flight info for all available flights to the chosen destination are printed to t
 - If there is only one, the user will be asked if they want to book it
 - If there are multiple, the details for each will be printed. The user will first be asked if any of the flights are acceptable, then if they answer 'yes', are prompted to select one
 
+![flight selection when there are multiple available flights](documentation/images/flight_selection.png)
+
 If the user says no available flights to the destination are acceptable, they will be given the option to choose another destination or return to the main program.
 
 If a flight is selected, the program will continue with the booking and move to the passenger details page.
-
-ADD PICTURE
-
-- passenger details
-![]()
 
 A message is displayed on top to confirm which flight is being booked.
 
@@ -129,31 +107,19 @@ The user is prompted with a series of questions to gather relevant information a
 - Nationality - must be a country in a country list taken from [pycountry](https://pypi.org/project/pycountry/)
 - Luggage - must be a whole number between 0 and 2
 
-ADD PICTURE
-
-- screenshot of booking page with all information entered
-![]()
+![booking page with passenger details filled in](documentation/images/booking_details_entered.png)
 
 If an invalid entry is provided, the terminal will display an error message in red explaining what the problem is, then ask the question again.
 
-ADD PICTURE
-
-- input error
-![]()
+![input error in passenger details program](documentation/images/details_input_error.png)
 
 After all data is entered correctly, the program randomly generates a booking number consisting of two letters, two numbers, two letters an two numbers (e.g. TF78RE32). This number is checked against a list of existing booking numbers, and if not already in the list is added itself, to ensure that booking numbers are not duplicated.
 
 All of the passenger data and the booking number is added to a new row in the worksheet for the relevant flight in the Google Sheets spreadsheet.
 
-ADD PICTURE
+![flight worksheet before passenger added](documentation/images/worksheet_before_booking.png)
 
-- flight worksheet before passenger added
-![]()
-
-ADD PICTURE
-
-- flight worksheet after passenger added
-![]()
+![flight worksheet after passenger added](documentation/images/worksheet_after_booking.png)
 
 The program then displays a message confirming that the booking was completed and prints the booking details to the terminal.
 
@@ -163,31 +129,15 @@ The user can then press enter to return to the main program.
 
 User is prompted to input the last name and booking number associated with a booking.
 
-ADD PICTURE
+![input booking details to retrieve booking](documentation/images/find_booking.png)
 
-- booking details input
-![]()
+If the last name does not match the booking, or the booking number does not exist, the user is given options to either try again or return to the main page.
 
-If the last name does not match the booking, the user is given the option to try again or return to the main page.
-
-ADD PICTURE
-
-- booking name incorrect
-![]()
-
-If the booking number does not exist, the user is prompted to try inputting it again.
-
-ADD PICTURE
-
-- booking number incorrect
-![]()
+![incorrect booking number provided](documentation/images/wrong_booking_number.png)
 
 If a booking is found with the matched name and booking number, the passenger details are printed to the terminal. A message will then inform the user whether the passenger is already checked in.
 
-ADD PICTURE
-
-- passenger details
-![]()
+![retrieved passenger details showing passenger not yet checked in](documentation/images/not_checked_in_passenger.png)
 
 If the passenger is already checked in, the user will be informed that the passenger details can no longer be changed. They will then be given the option to add luggage to the booking (which can still be done after check in.) If they respond 'yes', they are taken to the luggage adding program, if 'no' back to the main program.
 
@@ -195,22 +145,9 @@ If the passenger is not yet checked in, the user will be asked if they want to u
 
 The program will prompt the user to enter the detail type to be changed. If they enter an invald detail type, a list will appear showing the options and the prompt is repeated.
 
-ADD PICTURE
-
-- choose a valid detail type to be changed
-![]()
+![update detail page showing types of details that can be changed](documentation/images/changeable_detail_types.png)
 
 When a valid option is entered, the user will be asked to input the new data. This will then be validated in the same way as when a ticket is booked. If the data is valid, the information will be updated in the relevant flight worksheet.
-
-ADD PICTURE
-
-- worksheet before detail change
-![]()
-
-ADD PICTURE
-
-- worksheet after detail change
-![]()
 
 In the terminal, a confirmation message will appear stating that the change has been made, and the old and new details will also be printed.
 
@@ -222,31 +159,17 @@ The user is prompted to enter a last name and booking number, which will be chec
 
 Once a booking is successfully found, the program will inform the user whether that passenger is already checked in.
 
-ADD PICTURE
+![on check in page, retrieved a passenger that was already checked in](documentation/images/already_checked_in.png)
 
-- passenger already checked in message
-![]()
+If the passenger is not yet checked in, the program will print a message warning that passenger details can no longer be changed after check in. The current passenger details will then be printed and the user will be asked if anything needs to be updated.
 
-If the passenger is not yet checked in, the program will print a message warning that passenger details can no longer be changed after check in. The current passenger details will then be prompted and the user will be asked if anything needs to be updated.
-
-ADD PICTURE
-
-- warning and current passenger details
-![]()
+![check in page warns that details cannot be changed after check in](documentation/images/warning_update_before_check_in.png)
 
 If details need to be changed, the user will be taken to the update details program, described above. After updating any necessary data, they will be returned and ask if they wish to continue checking in.
 
-ADD PICTURE
-
-- after details update continue check in q
-![]()
-
 If no details need to be changed, the passenger will be checked in. This will update the 'checked in' cell in their worksheet row to TRUE, and a message confirming the check in will be printed.
 
-ADD PICTURE
-
-- passenger checked in confirmation
-![]()
+![passenger check in confirmation](documentation/images/successful_check_in.png)
 
 ### Add luggage
 
@@ -256,26 +179,15 @@ As above, the booking needs to be retrieved by last name and booking number.
 
 The program then informs the user how much luggage is currently booked, and depending on the number, asks if the user wants to increase that amount or leave it the same.
 
-ADD PICTURE
-
-- add luggage question
-![]()
+![user is asked if luggage should be added to booking](documentation/images/add_luggage_question.png)
 
 If a new number is entered, this data is updated in the relevant worksheet, and in any case a message is displayed stating that the change has been made or that the luggage amount has been left at the original number.
 
-ADD PICTURE
-
-- confirm luggage change
-![]()
+![luggage added confirmation](documentation/images/luggage_added.png)
 
 ### Exit portal
 
-From the main menu, the user can exit the program by entering '100'. A goodbye message is displayed and then the opening banner.
-
-ADD PICTURE
-
-- exit portal
-![]()
+From the main menu, the user can exit the program by entering '100'. A goodbye message is displayed, then the program closed on the same banner as used upon opening.
 
 ## Technologies Used
 
@@ -401,6 +313,12 @@ Extensive use testing was carried out to ensure that
 Each function was run through several times, inputting different data types and responses to each question, and the worksheet was checked to ensure data is added properly. Each function was checked by accessing it from the main menu and also from other functions, where possible, to ensure the cross-linking works correctly.
 
 No bugs or uncaught errors were found in this process.
+
+### Validator testing
+
+The code was passed through the [Code Institute PEP8 Python Linter](https://pep8ci.herokuapp.com/#) with no errors.
+
+![python linter](documentation/images/python_linter.png)
 
 ## Deployment
 
